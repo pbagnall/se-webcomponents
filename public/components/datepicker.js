@@ -66,16 +66,22 @@ dialogTemplate.innerHTML = `
       }
       
       div.dialog table {
+      position: relative;
          border-collapse: collapse;
       }
       
-      div.dialog thead {
+      div.dialog thead,
+      div.dialog tfoot {
          position: sticky;
          top: 0;
-         background-color: yellow;
+         background-color: #dddddd;
          padding: 0;
          margin: 0;
          z-index: 1;
+      }
+      
+      div.dialog tfoot {
+         bottom: 0;      
       }
 
       div.dialog th.month, 
@@ -94,6 +100,21 @@ dialogTemplate.innerHTML = `
           text-align: center;
           min-width: 2rem;
       }
+      
+      div.dialog tr.oddMonth,
+      div.dialog td.oddMonth, 
+      div.dialog th.oddMonth {
+          background-color: #eaeaea;      
+      }
+
+      div.dialog tr.evenMonth,
+      div.dialog td.evenMonth,
+      div.dialog th.evenMonth {
+          background-color: #ffffff;      
+      }
+      
+      
+
    </style>
    <div class='dialog'>
       <table>
@@ -106,10 +127,23 @@ dialogTemplate.innerHTML = `
                <th scope='col'>Fri</th>
                <th scope='col'>Sat</th>
                <th scope='col'>Sun</th>
-               <td></td>
-               <td></td>
+               <td><button id='backmonth'>Up</button></td>
+               <td><button id='backyear'>Up</button></td>
             </tr>
          </thead>
+         <tfoot>
+            <tr>
+               <td></td>
+               <td></td>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <th></th>
+               <td><button id='forwardmonth'>Down</button></td>
+               <td><button id='forwardyear'>Down</button></td>
+            </tr>
+         </tfoot>
          <tbody>
          </tbody>
       </table>
@@ -126,8 +160,7 @@ export default class DatePicker extends HTMLElement {
       this.trigger = this.shadowRoot.querySelector("button.trigger");
       this.opener = (e) => this.openDatePicker(e);
       this.closer = (e) => this.closeDatePicker(e);
-      this.scrolled = (e) => this.scrolledDialog(e);
-      this.ignoreDownScroll = false;
+      this.scrolled = () => this.scrolledDialog();
 
       this.input.value = this.getAttribute('date');
       this.dateValue = dayjs(this.input.value);
@@ -147,12 +180,14 @@ export default class DatePicker extends HTMLElement {
       this.shadowRoot.appendChild(dialogTemplate.content.cloneNode(true));
       this.dialog = this.shadowRoot.querySelector("div.dialog");
       this.dialog.addEventListener('scroll', this.scrolled);
+      const upMonth = this.shadowRoot.getElementById('backmonth');
+      const upYear = this.shadowRoot.getElementById('backyear');
 
       this.populateCalendar(this.dialog.querySelector("tbody"), this.dateValue);
    }
 
    addPeriodMarker(period, id, format, klass, parent, row, startDate) {
-      let periodMarker = parent.querySelector("#"+period+startDate.format(id));
+      const periodMarker = parent.querySelector("#"+period+startDate.format(id));
 
       if (periodMarker) {
          periodMarker.rowSpan++;
@@ -160,10 +195,16 @@ export default class DatePicker extends HTMLElement {
             row.appendChild(periodMarker);
          }
       } else {
-         let monthCell = document.createElement("th");
+         const monthCell = document.createElement("th");
          monthCell.id = period+startDate.format(id);
          monthCell.classList.add(klass);
-         let span = document.createElement('span');
+         if (period === "M") {
+            // const endOfWeek = startDate.add(6, 'day');
+            monthCell.classList.add(startDate.month() % 2 === 0 ? "oddMonth" : "evenMonth");
+         } else {
+            monthCell.classList.add(startDate.year() % 2 === 0 ? "oddMonth" : "evenMonth");
+         }
+         const span = document.createElement('span');
          span.appendChild(document.createTextNode(startDate.format(format)));
          monthCell.appendChild(span);
          row.appendChild(monthCell);
@@ -171,25 +212,28 @@ export default class DatePicker extends HTMLElement {
    }
 
    addWeeksAtStart(weeks) {
-      console.log("adding rows at start");
-
-      let parent = this.dialog.querySelector("tbody");
+      const parent = this.dialog.querySelector("tbody");
       let first = parent.firstElementChild;
       let startDate = dayjs(first.dataset['beginning']).subtract(7, 'day');
 
       for (let i=0; i<weeks; i++) {
-         let row = document.createElement("tr");
+         const row = document.createElement("tr");
+         const startMonth = startDate.month();
+         row.classList.add(startMonth % 2 === 0 ? "oddMonth" : "evenMonth");
          row.dataset['beginning'] = startDate.format('YYYY-MM-DD');
 
          let weekday = startDate;
          for (let day=0; day<7; day++) {
-            let cell = document.createElement("td");
+            const cell = document.createElement("td");
+            if (weekday.month() !== startDate.month()) {
+               cell.classList.add(weekday.month() % 2 === 0 ? "oddMonth" : "evenMonth");
+            }
             cell.appendChild(document.createTextNode(weekday.format('D')));
             weekday = weekday.add(1, 'day');
             row.appendChild(cell);
          }
 
-         let endOfWeek = startDate.add(6, 'day');
+         const endOfWeek = startDate.add(6, 'day');
          this.addPeriodMarker("M", "YYYYMM", "MMM", 'month', parent, row, endOfWeek);
          this.addPeriodMarker("Y", "YYYY", "YYYY",'year', parent, row, endOfWeek);
 
@@ -201,24 +245,29 @@ export default class DatePicker extends HTMLElement {
    }
 
    addWeeksAtEnd(weeks, startDate) {
-      let parent = this.dialog.querySelector("tbody");
+      const parent = this.dialog.querySelector("tbody");
       if (typeof startDate === 'undefined') {
          startDate = dayjs(parent.lastElementChild.dataset['beginning']).add(7, 'day');
       }
       startDate = startDate.day(1);
 
       for (let i=0; i<weeks; i++) {
-         let row = document.createElement("tr");
+         const row = document.createElement("tr");
+         const startMonth = startDate.month();
+         row.classList.add(startMonth % 2 === 0 ? "oddMonth" : "evenMonth");
          row.dataset['beginning'] = startDate.format('YYYY-MM-DD');
 
          for (let day=0; day<7; day++) {
-            let cell = document.createElement("td");
+            const cell = document.createElement("td");
+            if (startDate.month() !== startMonth) {
+               cell.classList.add(startDate.month() % 2 === 0 ? "oddMonth" : "evenMonth");
+            }
             cell.appendChild(document.createTextNode(startDate.format('D')));
-            startDate = startDate.add(1, 'day');
             row.appendChild(cell);
+            startDate = startDate.add(1, 'day');
          }
 
-         let endOfWeek = startDate.subtract(1, 'day');
+         const endOfWeek = startDate.subtract(1, 'day');
          this.addPeriodMarker("M", "YYYYMM", "MMM", 'month', parent, row, endOfWeek);
          this.addPeriodMarker("Y", "YYYY", "YYYY",'year', parent, row, endOfWeek);
 
@@ -227,74 +276,85 @@ export default class DatePicker extends HTMLElement {
    }
 
    removeFirstNWeeks(number) {
-      let parent = this.dialog.querySelector("tbody");
+      const parent = this.dialog.querySelector("tbody");
 
       for (let i=0; i<number; i++) {
-         let row = parent.firstElementChild;
-         let month = row.querySelector('th');
-         let year;
-         if (month) {
-            year = month.nextSibling;
-            if (month.rowSpan > 1) {
-               month.rowSpan--;
-               // get next row
-               // insert month into next row at end
-               let nextRow = row.nextSibling;
-               nextRow.appendChild(month);
-            }
-         }
+         const row = parent.firstElementChild;
+         const month = row.querySelector('th');
 
-         // remove year, if present
-         if (year) {
-            if (year.rowSpan > 1) {
+         // move month label to next row if appropriate
+         if (month && month.rowSpan > 1) {
+            const nextRow = row.nextSibling;
+            const year = month.nextSibling;
+
+            month.rowSpan--;
+            nextRow.appendChild(month);
+
+            // move year label to next row if appropriate
+            if (year && year.rowSpan > 1) {
                year.rowSpan--;
-               // get next row
-               // insert month into next row at end
-               let nextRow = row.nextSibling;
                nextRow.appendChild(year);
             }
          }
 
-         let height = row.getBoundingClientRect().height;
+         const height = row.getBoundingClientRect().height;
          parent.removeChild(row);
          this.dialog.scrollTop -= height;
       }
    }
 
-   removeLastNWeeks(parent, number) {
+   removeLastNWeeks(number) {
+      const parent = this.dialog.querySelector("tbody");
+
+      for (let i=0; i<number; i++) {
+         const row = parent.lastElementChild;
+         const startDate = dayjs(row.dataset['beginning']);
+
+         const selector = `#M${startDate.format("YYYYMM")}`;
+         const monthStartCell = parent.querySelector(selector);
+         if (monthStartCell && monthStartCell !== row) {
+            monthStartCell.rowSpan--;
+         }
+
+         const yearselector = `#Y${startDate.format("YYYY")}`;
+         const yearStartCell = parent.querySelector(yearselector);
+         if (yearStartCell && yearStartCell !== row) {
+            yearStartCell.rowSpan--;
+         }
+
+         parent.removeChild(row);
+      }
    }
 
-   scrolledDialog(scrollEvent) {
-      let dialogHeight = this.dialog.getBoundingClientRect().height;
-      let tableHeight = this.dialog.querySelector("table").getBoundingClientRect().height;
-      let scroll = this.dialog.scrollTop;
-      let bottomProximity = tableHeight - dialogHeight - scroll;
+   scrolledDialog() {
+      const dialogHeight = this.dialog.getBoundingClientRect().height;
+      const tableHeight = this.dialog.querySelector("table").getBoundingClientRect().height;
+      const scroll = this.dialog.scrollTop;
+      const bottomProximity = tableHeight - dialogHeight - scroll;
 
-      if (bottomProximity < 80) {
+      if (bottomProximity < 200) {
          // get last week row
-         this.addWeeksAtEnd(4);
-         this.removeFirstNWeeks(4);
-      } else if (scroll < 80) {
+         this.addWeeksAtEnd(26);
+         this.removeFirstNWeeks(26);
+      } else if (scroll < 200) {
          // get first week row
-         this.addWeeksAtStart(4);
-         this.removeLastNWeeks(4);
+         this.addWeeksAtStart(26);
+         this.removeLastNWeeks(26);
       }
    }
 
    populateCalendar(parent, selectedDate) {
-      const startDate = selectedDate.subtract(12, 'week').date(1);
-      this.addWeeksAtEnd(24, startDate);
+      const startDate = selectedDate.subtract(52, 'week').date(1);
+      this.addWeeksAtEnd(104, startDate);
       this.scrollToDate(selectedDate);
    }
 
    scrollToDate(date) {
-      const parent = this.dialog.querySelector("tbody");
       const beginning = date.day(1).format("YYYY-MM-DD");
-      const weekRow = parent.querySelector(`[data-beginning='${beginning}']`);
-      const weekTop = weekRow.getBoundingClientRect();
-      console.log(weekTop);
-      console.log(parent.getBoundingClientRect());
-      parent.scrollTop = weekTop
+      const dialogRect = this.dialog.getBoundingClientRect();
+      const tableRect = this.dialog.querySelector("table").getBoundingClientRect();
+      const weekRect = this.dialog.querySelector(`[data-beginning='${beginning}']`).getBoundingClientRect();
+      this.dialog.scrollTop = weekRect.top - tableRect.top - dialogRect.height/2 + weekRect.height/2;
    }
 
    closeDatePicker() {
