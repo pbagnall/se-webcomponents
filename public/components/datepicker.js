@@ -52,12 +52,24 @@ const dialogTemplate = document.createElement('template');
 dialogTemplate.innerHTML = `
    <style>
       div.dialog {
+          --oddMonthBackground: #eaeaea;
+          --evenMonthBackground: #ffffff;
+          --toolbarBackground: #d0d0d0;
+          --foreground: #000000;
+          --hoverColor: #0000dd;
+          --hoverBackgroundColor: #bbbbdd;
+          --selectedColor: #ffffff;
+          --selectedBackgroundColor: #ff0000;
+
           position: absolute;
           top: 2rem;
-          border: 1px solid black;
+          border: 1px solid;
+          border-color: var(--foreground);
           height: 16rem;
+          color: var(--foreground);
           overflow: auto;
           scrollbar-width: none;
+          font-size: 0.8rem;
       }
       
       div.dialog::-webkit-scrollbar {
@@ -74,7 +86,7 @@ dialogTemplate.innerHTML = `
       div.dialog tfoot {
          position: sticky;
          top: 0;
-         background-color: #dddddd;
+         background-color: var(--toolbarBackground);
          padding: 0;
          margin: 0;
          z-index: 1;
@@ -93,28 +105,44 @@ dialogTemplate.innerHTML = `
       div.dialog th.month span,
       div.dialog th.year span {
          position: sticky;
-         top: 1.5rem;
+         top: 1.5em;
       } 
       
       div.dialog td {
+          padding: 2px;
           text-align: center;
-          min-width: 2rem;
+          min-width: 2em;
+      }
+
+      div.dialog td:hover span {
+          color: var(--hoverColor);
+          display: inline-block;
+          width: 100%;
+          background-color: var(--hoverBackgroundColor);
+          border-radius: 40px;
+          border-color: transparent;
       }
       
       div.dialog tr.oddMonth,
       div.dialog td.oddMonth, 
       div.dialog th.oddMonth {
-          background-color: #eaeaea;      
+          background-color: var(--oddMonthBackground);      
       }
 
       div.dialog tr.evenMonth,
       div.dialog td.evenMonth,
       div.dialog th.evenMonth {
-          background-color: #ffffff;      
+          background-color: var(--evenMonthBackground);      
       }
       
-      
-
+      div.dialog td.selected span {
+          display: inline-block;
+          width: 100%;
+          color: var(--selectedColor);
+          background-color: var(--selectedBackgroundColor);
+          border-radius: 40px;
+          border-color: transparent;
+      }
    </style>
    <div class='dialog'>
       <table>
@@ -182,8 +210,12 @@ export default class DatePicker extends HTMLElement {
       this.dialog.addEventListener('scroll', this.scrolled);
       const upMonth = this.shadowRoot.getElementById('backmonth');
       const upYear = this.shadowRoot.getElementById('backyear');
+      const downMonth = this.shadowRoot.getElementById('forwardmonth');
+      const downYear = this.shadowRoot.getElementById('forwardyear');
 
-      this.populateCalendar(this.dialog.querySelector("tbody"), this.dateValue);
+      const tablebody = this.dialog.querySelector("tbody");
+      this.populateCalendar(tablebody, this.dateValue);
+      tablebody.addEventListener("click", (e) => this.clickDate(e));
    }
 
    addPeriodMarker(period, id, format, klass, parent, row, startDate) {
@@ -228,7 +260,10 @@ export default class DatePicker extends HTMLElement {
             if (weekday.month() !== startDate.month()) {
                cell.classList.add(weekday.month() % 2 === 0 ? "oddMonth" : "evenMonth");
             }
-            cell.appendChild(document.createTextNode(weekday.format('D')));
+
+            const span = document.createElement("span");
+            span.appendChild(document.createTextNode(weekday.format('D')));
+            cell.appendChild(span);
             weekday = weekday.add(1, 'day');
             row.appendChild(cell);
          }
@@ -262,7 +297,9 @@ export default class DatePicker extends HTMLElement {
             if (startDate.month() !== startMonth) {
                cell.classList.add(startDate.month() % 2 === 0 ? "oddMonth" : "evenMonth");
             }
-            cell.appendChild(document.createTextNode(startDate.format('D')));
+            const span = document.createElement("span");
+            span.appendChild(document.createTextNode(startDate.format('D')));
+            cell.appendChild(span);
             row.appendChild(cell);
             startDate = startDate.add(1, 'day');
          }
@@ -364,6 +401,25 @@ export default class DatePicker extends HTMLElement {
 
       this.trigger.removeEventListener('click', this.closer);
       this.trigger.addEventListener('click', this.opener);
+   }
+
+   getEventElementAndDate(event) {
+      if (event.target.tagName !== 'SPAN' && event.target.tagName !== 'TD') return null;
+      const target =  event.target.tagName === 'SPAN' ? event.target.parentElement : event.target;
+      const week = event.target.parentElement.dataset['beginning'];
+      const date = dayjs(week).date(event.target.textContent);
+      return { element: target, date: date };
+   }
+
+   clickDate(event) {
+      const { element, date } = this.getEventElementAndDate(event);
+      console.log('clicked', event.target.tagName);
+      console.log(date.format("YYYY-MM-DD"));
+
+      if (this.activeElement) this.activeElement.classList.remove('selected');
+      this.value = date;
+      this.activeElement = element;
+      element.classList.add('selected');
    }
 }
 window.customElements.define('se-datepicker', DatePicker);
