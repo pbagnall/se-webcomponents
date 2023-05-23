@@ -5,14 +5,34 @@
     <script type='module' src='/components/datepicker.js'></script>
     <style><!--
       body {
-        font-family: Avenir, sans-serif;
+        /*font-family: Avenir, sans-serif;*/
+        /*margin: 8px;*/
       }
     --></style>
+    <script type='text/javascript'>
+      function dateChanged(event) {
+        const output = document.getElementById('output');
+        const date = dayjs(event.value);
+        output.replaceChildren(document.createTextNode(date.format("DD-MMM-YYYY")));
+      }
+    </script>
   </head>
   <body>
-    <input type='date' value='2023-1-12'>
-    <se-datepicker date='2023-1-12'></se-datepicker>
+    <se-datepicker date='2023-1-12' onchange='dateChanged(event)'></se-datepicker>
+    Selected date = <output id='output'>2023-01-12</output>
 
-    <se-daterange fromDate='2023-1-12' toDate='2023-2-12'></se-daterange>
+    <div style='position: absolute; top: 8px; right: 8px; background-color: lightgreen; padding: 20px;'>
+      <se-datepicker date='2023-1-12' onchange='dateChanged(event)'></se-datepicker>
+    </div>
+
+    <div style='position: absolute; bottom: 8px; right: 8px; background-color: lightgreen; padding: 20px;'>
+      <se-datepicker date='2023-1-12' onchange='dateChanged(event)'></se-datepicker>
+    </div>
+
+    <div style='position: absolute; bottom: 40px; left: 40px; background-color: lightgreen; padding: 20px;'>
+      <button id='trigger' onclick='document.getElementById("popup").toggle()'>Open popup</button>
+      <se-popup id='popup' anchor='trigger' anchor-direction='ne,en'><div>This is a popup.</div></se-popup>
+    </div>
+    <div style='background-color:red; position: absolute;'>This is a popup.</div>
   </body>
 </html>
