@@ -20,7 +20,7 @@ datePickerTemplate.innerHTML = `
             height: 1.25rem;
             vertical-align: bottom;
             margin: 0;
-            width: 4rem;
+            width: 4.5rem;
         }
         
         input.field:focus {
@@ -206,11 +206,11 @@ export default class DatePicker extends HTMLElement {
       this.closer = (e) => this.closeDatePicker(e);
       this.scrolled = () => this.scrolledDialog();
 
-      this.input.value = this.getAttribute('date');
-      this.dateValue = dayjs(this.input.value);
+      this.dateValue = dayjs(this.attributes['date'].value);
       if (isNaN(this.dateValue.valueOf())) {
          this.dateValue = dayjs();
       }
+      this.input.value = this.dateValue.format("DD MMM YYYY");
 
       this.trigger.addEventListener('click', this.opener);
       if (this.hasAttribute('open')) {
@@ -299,8 +299,8 @@ export default class DatePicker extends HTMLElement {
             const span = document.createElement("span");
             span.appendChild(document.createTextNode(weekday.format('D')));
             cell.appendChild(span);
-            weekday = weekday.add(1, 'day');
             row.appendChild(cell);
+            weekday = weekday.add(1, 'day');
          }
 
          const endOfWeek = startDate.add(6, 'day');
@@ -443,18 +443,19 @@ export default class DatePicker extends HTMLElement {
    getEventElementAndDate(event) {
       if (event.target.tagName !== 'SPAN' && event.target.tagName !== 'TD') return null;
       const target =  event.target.tagName === 'SPAN' ? event.target.parentElement : event.target;
-      const week = event.target.parentElement.dataset['beginning'];
-      const date = dayjs(week).date(event.target.textContent);
+      const week = target.parentElement.dataset['beginning'];
+      let date = dayjs(week);
+      if (date.date() > event.target.textContent) {
+         date = date.month(date.month() + 1);
+      }
+      date = date.date(event.target.textContent);
       return { element: target, date: date };
    }
 
    clickDate(event) {
       const eventData = this.getEventElementAndDate(event);
       if (eventData === null) return;
-
       const { element, date } = eventData;
-      console.log('clicked', event.target.tagName);
-      console.log(date.format("YYYY-MM-DD"));
 
       if (this.activeElement) this.activeElement.classList.remove('selected');
       this.value = date;
@@ -463,11 +464,12 @@ export default class DatePicker extends HTMLElement {
 
       if (!this.dateValue.isSame(date, 'day')) {
          this.dateValue = date;
+         this.input.value = date.format("DD MMM YYYY");
          const dateChangedEvent = new Event("change");
          dateChangedEvent.value = this.dateValue.format('YYYY-MM-DD');
          this.dispatchEvent(dateChangedEvent);
+         this.closeDatePicker();
       }
-
    }
 }
 window.customElements.define('se-datepicker', DatePicker);

@@ -5,7 +5,12 @@ popupTemplate.innerHTML = `
          border: 1px solid;      
          background-color: red;
          position: absolute;
+         width: auto;
          z-index: 1000;
+      }
+      
+      div#inner {
+         position: absolute;
       }
       
       div#popup.closed {
@@ -13,10 +18,12 @@ popupTemplate.innerHTML = `
       }
    </style>
    <div id='popup' class='closed'>
-      <slot>Popup content</slot>
+      <div class='inner'>
+         <slot>Popup content</slot>
+      </div>
    </div>`;
 
-const currentPopup = null;
+let currentPopup = null;
 
 export default class PopUp extends HTMLElement {
    constructor() {
@@ -49,12 +56,16 @@ export default class PopUp extends HTMLElement {
    }
 
    close() {
-      const popup = document.getElementById("popup");
       this.popup.classList.add("closed");
       this.dispatchEvent(new Event("close"));
+      currentPopup = null;
    }
 
    open() {
+      if (currentPopup === this) return;
+      if (currentPopup !== null) currentPopup.close();
+      currentPopup = this;
+
       this.popup.classList.remove("closed");
       this.dispatchEvent(new Event("open"));
       const anchor = this.getElementById(this.anchorId);
@@ -64,15 +75,10 @@ export default class PopUp extends HTMLElement {
       }
       const popupRect = this.popup.getBoundingClientRect();
       const anchorRect = anchor.getBoundingClientRect();
-      console.log("popup", popup, popupRect);
-      console.log("anchor", anchor, anchorRect);
-      console.log("windowWidth", window.innerWidth);
-      console.log("windowHeight", window.innerHeight);
 
       let position;
       for (let direction of this.anchorDirection) {
          position = this.calcPosition(direction, anchorRect, popupRect, window.innerWidth, window.innerHeight);
-         console.log(position);
          if (position.fits) break;
       }
 
@@ -82,6 +88,7 @@ export default class PopUp extends HTMLElement {
 
       this.style.position = 'absolute';
       this.style.left = `${position.x}px`;
+      this.style.right = "0";
       this.style.top = `${position.y}px`;
    }
 
@@ -122,7 +129,6 @@ export default class PopUp extends HTMLElement {
          case "se":
          case "ne":
             position.x = anchorRect.left;
-            // console.log(position.x, popupRect.width, windowWidth);
             position.fits &&= position.x + popupRect.width <= windowWidth;
             break;
 
@@ -171,8 +177,6 @@ export default class PopUp extends HTMLElement {
          if (reference.nodeType === Node.DOCUMENT_NODE) return document.documentElement;
 
          let position = window.getComputedStyle(reference).getPropertyValue("position")
-         console.log(reference.tagName, position);
-
          if (["absolute", "relative", "fixed"].includes(position)) return reference;
       }
    }
