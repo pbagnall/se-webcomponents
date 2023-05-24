@@ -483,6 +483,8 @@ export default class DatePicker extends HTMLElement {
    getEventElementAndDate(event) {
       if (event.target.tagName !== 'SPAN' && event.target.tagName !== 'TD') return null;
       const target =  event.target.tagName === 'SPAN' ? event.target.parentElement : event.target;
+      if (target.tagName !== 'TD') return null;
+
       const week = target.parentElement.dataset['beginning'];
       let date = dayjs(week);
       if (date.date() > event.target.textContent) {
