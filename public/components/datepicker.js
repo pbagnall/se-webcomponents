@@ -205,6 +205,8 @@ export default class DatePicker extends HTMLElement {
       this.opener = (e) => this.openDatePicker(e);
       this.closer = (e) => this.closeDatePicker(e);
       this.scrolled = () => this.scrolledDialog();
+      this.popupOpened = () => this.popupOpenedHandler();
+      this.popupClosed = () => this.popupClosedHandler();
 
       this.dateValue = dayjs(this.attributes['date'].value);
       if (isNaN(this.dateValue.valueOf())) {
@@ -235,9 +237,9 @@ export default class DatePicker extends HTMLElement {
       downMonth.addEventListener("click", (e) => this.jumpScroll(e));
       downYear.addEventListener("click", (e) => this.jumpScroll(e));
 
-      const tablebody = this.dialog.querySelector("tbody");
-      this.populateCalendar(tablebody, this.dateValue);
-      tablebody.addEventListener("click", (e) => this.clickDate(e));
+      this.populateCalendar();
+      this.popup.addEventListener("open", this.popupOpened);
+      this.popup.addEventListener("close", this.popupClosed);
       this.popup.open();
    }
 
@@ -415,10 +417,16 @@ export default class DatePicker extends HTMLElement {
       }
    }
 
-   populateCalendar(parent, selectedDate) {
-      const startDate = selectedDate.subtract(52, 'week').date(1);
+   populateCalendar() {
+      const tablebody = this.dialog.querySelector("tbody");
+      tablebody.addEventListener("click", (e) => this.clickDate(e));
+
+      const startDate = this.dateValue.subtract(52, 'week').date(1);
       this.addWeeksAtEnd(104, startDate);
-      this.scrollToDate(selectedDate);
+   }
+
+   popupOpenedHandler() {
+      this.scrollToDate(this.dateValue);
    }
 
    scrollToDate(date) {
