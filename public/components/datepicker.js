@@ -58,10 +58,11 @@ dialogTemplate.innerHTML = `
           --evenMonthBackground: #ffffff;
           --toolbarBackground: #d0d0d0;
           --foreground: #000000;
-          --hoverColor: #0000dd;
-          --hoverBackgroundColor: #bbbbdd;
+          --hoverColor: #ffffff;
+          --hoverBackgroundColor: #ff000080;
           --selectedColor: #ffffff;
           --selectedBackgroundColor: #ff0000;
+          --todayBorderColor: orange;
 
           top: 2rem;
           height: 16rem;
@@ -120,22 +121,10 @@ dialogTemplate.innerHTML = `
       se-popup th.year span {
          position: sticky;
          top: 1.5rem;
+         writing-mode: vertical-lr;
+         text-orientation: sideways;
+         padding: 3px;
       } 
-      
-      se-popup td {
-          padding: 2px;
-          text-align: center;
-          min-width: 2em;
-      }
-
-      se-popup td:hover span {
-          color: var(--hoverColor);
-          display: inline-block;
-          width: 100%;
-          background-color: var(--hoverBackgroundColor);
-          border-radius: 40px;
-          border-color: transparent;
-      }
       
       se-popup tr.oddMonth,
       se-popup td.oddMonth, 
@@ -149,13 +138,34 @@ dialogTemplate.innerHTML = `
           background-color: var(--evenMonthBackground);      
       }
       
-      se-popup td.selected span {
+      se-popup td {
+          padding: 2px;
+          margin-left: 2px;
+          text-align: center;
+          min-width: 2.2em;
+      }
+      
+      se-popup td span {
           display: inline-block;
-          width: 100%;
-          color: var(--selectedColor);
-          background-color: var(--selectedBackgroundColor);
+          width: calc(100% - 4px);
           border-radius: 40px;
           border-color: transparent;
+      }
+
+      se-popup td:hover span {
+          color: var(--hoverColor);
+          background-color: var(--hoverBackgroundColor);
+      }
+      
+      se-popup td.selected span {
+          color: var(--selectedColor);
+          background-color: var(--selectedBackgroundColor);
+      }
+      
+      se-popup td.today span {
+          border: 2px solid var(--todayBorderColor);
+          padding: 0;
+          margin: 0;
       }
    </style>
    <se-popup anchor='date-picker' anchor-direction='se,sw,ne,nw'>
@@ -170,8 +180,8 @@ dialogTemplate.innerHTML = `
                   <th scope='col'>Fri</th>
                   <th scope='col'>Sat</th>
                   <th scope='col'>Sun</th>
-                  <td><button id='backmonth' data-direction="back" data-unit="month">Up</button></td>
-                  <td><button id='backyear' data-direction="back" data-unit="year">Up</button></td>
+                  <td><button id='backmonth' data-direction="back" data-unit="month">^</button></td>
+                  <td><button id='backyear' data-direction="back" data-unit="year">^</button></td>
                </tr>
             </thead>
             <tfoot>
@@ -183,8 +193,8 @@ dialogTemplate.innerHTML = `
                   <th></th>
                   <th></th>
                   <th></th>
-                  <td><button id='forwardmonth' data-direction="forward" data-unit="month">Down</button></td>
-                  <td><button id='forwardyear' data-direction="forward" data-unit="year">Down</button></td>
+                  <td><button id='forwardmonth' data-direction="forward" data-unit="month">v</button></td>
+                  <td><button id='forwardyear' data-direction="forward" data-unit="year">v</button></td>
                </tr>
             </tfoot>
             <tbody>
@@ -202,8 +212,6 @@ export default class DatePicker extends HTMLElement {
 
       this.input = this.shadowRoot.querySelector("input.field");
       this.trigger = this.shadowRoot.querySelector("button.trigger");
-      this.opener = (e) => this.openDatePicker(e);
-      this.closer = (e) => this.closeDatePicker(e);
       this.scrolled = () => this.scrolledDialog();
       this.popupOpened = () => this.popupOpenedHandler();
       this.popupClosed = () => this.popupClosedHandler();
@@ -214,17 +222,27 @@ export default class DatePicker extends HTMLElement {
       }
       this.input.value = this.dateValue.format("DD MMM YYYY");
 
-      this.trigger.addEventListener('click', this.opener);
+      this.trigger.addEventListener('click', () => this.triggerClicked());
+      this.popupIsOpen = false;
+
       if (this.hasAttribute('open')) {
-         this.opener();
+         this.openDatePicker();
+      }
+   }
+
+   triggerClicked() {
+      console.log("triggerClicked");
+      if (this.popupIsOpen) {
+         this.closeDatePicker();
+      } else {
+         this.openDatePicker();
       }
    }
 
    openDatePicker() {
-      this.trigger.removeEventListener('click', this.opener);
-      this.trigger.addEventListener('click', this.closer);
-
+      console.log("opening");
       this.shadowRoot.appendChild(dialogTemplate.content.cloneNode(true));
+      this.popupIsOpen = true;
       this.popup = this.shadowRoot.querySelector("se-popup");
       this.dialog = this.shadowRoot.querySelector("#container");
       this.dialog.addEventListener('scroll', this.scrolled);
@@ -232,10 +250,11 @@ export default class DatePicker extends HTMLElement {
       const upYear = this.shadowRoot.getElementById('backyear');
       const downMonth = this.shadowRoot.getElementById('forwardmonth');
       const downYear = this.shadowRoot.getElementById('forwardyear');
-      upMonth.addEventListener("click", (e) => this.jumpScroll(e));
-      upYear.addEventListener("click", (e) => this.jumpScroll(e));
-      downMonth.addEventListener("click", (e) => this.jumpScroll(e));
-      downYear.addEventListener("click", (e) => this.jumpScroll(e));
+      const jumpScroll = (e) => this.jumpScroll(e);
+      upMonth.addEventListener("click", jumpScroll);
+      upYear.addEventListener("click", jumpScroll);
+      downMonth.addEventListener("click", jumpScroll);
+      downYear.addEventListener("click", jumpScroll);
 
       this.populateCalendar();
       this.popup.addEventListener("open", this.popupOpened);
@@ -282,6 +301,7 @@ export default class DatePicker extends HTMLElement {
 
    addWeeksAtStart(weeks) {
       const parent = this.dialog.querySelector("tbody");
+      const today = dayjs();
       let first = parent.firstElementChild;
       let startDate = dayjs(first.dataset['beginning']).subtract(7, 'day');
 
@@ -294,6 +314,8 @@ export default class DatePicker extends HTMLElement {
          let weekday = startDate;
          for (let day=0; day<7; day++) {
             const cell = document.createElement("td");
+            if (weekday.isSame(today, 'day')) cell.classList.add("today");
+            if (weekday.isSame(this.dateValue, 'day')) cell.classList.add("selected");
             if (weekday.month() !== startDate.month()) {
                cell.classList.add(weekday.month() % 2 === 0 ? "oddMonth" : "evenMonth");
             }
@@ -317,6 +339,7 @@ export default class DatePicker extends HTMLElement {
    }
 
    addWeeksAtEnd(weeks, startDate) {
+      const today = dayjs();
       const parent = this.dialog.querySelector("tbody");
       if (typeof startDate === 'undefined') {
          startDate = dayjs(parent.lastElementChild.dataset['beginning']).add(7, 'day');
@@ -331,6 +354,8 @@ export default class DatePicker extends HTMLElement {
 
          for (let day=0; day<7; day++) {
             const cell = document.createElement("td");
+            if (startDate.isSame(today, 'day')) cell.classList.add("today");
+            if (startDate.isSame(this.dateValue, 'day')) cell.classList.add("selected");
             if (startDate.month() !== startMonth) {
                cell.classList.add(startDate.month() % 2 === 0 ? "oddMonth" : "evenMonth");
             }
@@ -420,13 +445,16 @@ export default class DatePicker extends HTMLElement {
    populateCalendar() {
       const tablebody = this.dialog.querySelector("tbody");
       tablebody.addEventListener("click", (e) => this.clickDate(e));
-
       const startDate = this.dateValue.subtract(52, 'week').date(1);
       this.addWeeksAtEnd(104, startDate);
    }
 
    popupOpenedHandler() {
       this.scrollToDate(this.dateValue);
+   }
+
+   popupClosedHandler() {
+      this.tidyUpAfterClose();
    }
 
    scrollToDate(date) {
@@ -438,14 +466,18 @@ export default class DatePicker extends HTMLElement {
    }
 
    closeDatePicker() {
+      console.log("closing");
+      this.popup.close();
+   }
+
+   tidyUpAfterClose() {
+      console.log("tidying up");
       this.dialog = null;
       const popup = this.shadowRoot.querySelector("se-popup");
       const popupStyle=this.shadowRoot.querySelector("style#popup");
       popup.parentNode.removeChild(popup);
       popupStyle.parentNode.removeChild(popupStyle);
-
-      this.trigger.removeEventListener('click', this.closer);
-      this.trigger.addEventListener('click', this.opener);
+      this.popupIsOpen = false;
    }
 
    getEventElementAndDate(event) {

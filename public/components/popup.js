@@ -1,3 +1,5 @@
+import '/components/glass.js';
+
 const popupTemplate = document.createElement('template');
 popupTemplate.innerHTML = `
    <style>
@@ -35,7 +37,7 @@ export default class PopUp extends HTMLElement {
       this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
    }
 
-   getElementById(id) {
+   getElementByIdBreakout(id) {
       let root = this.shadowRoot;
       let element = null;
       do {
@@ -58,6 +60,8 @@ export default class PopUp extends HTMLElement {
    close() {
       this.popup.classList.add("closed");
       this.dispatchEvent(new Event("close"));
+      const glass = document.documentElement.querySelector("body > se-glass");
+      glass.parentElement.removeChild(glass);
       currentPopup = null;
    }
 
@@ -68,7 +72,7 @@ export default class PopUp extends HTMLElement {
 
       this.popup.classList.remove("closed");
       this.dispatchEvent(new Event("open"));
-      const anchor = this.getElementById(this.anchorId);
+      const anchor = this.getElementByIdBreakout(this.anchorId);
       if (anchor === null) {
          console.error(`Popup can't locate anchor element (id=${this.anchorId})`);
          return;
@@ -90,6 +94,12 @@ export default class PopUp extends HTMLElement {
       this.style.left = `${position.x}px`;
       this.style.right = "0";
       this.style.top = `${position.y}px`;
+
+      const glass = document.createElement("se-glass");
+      glass.addEventListener("click", () => {
+         this.close();
+      });
+      document.body.appendChild(glass);
    }
 
    calcPosition(direction, anchorRect, popupRect, windowWidth, windowHeight) {
