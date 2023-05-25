@@ -12,7 +12,6 @@
       #popupcontent {
         background-color: white;
         padding: 0.25rem;
-
       }
     --></style>
     <script type='text/javascript'>
@@ -23,9 +22,18 @@
       }
 
       function popupTriggered(event) {
-        document.getElementById("popup").toggle();
         const trigger = document.getElementById("trigger");
-        trigger.textContent = trigger.textContent === 'Open popup' ? 'Close popup' : 'Open popup';
+        if (trigger.textContent === 'Open popup') {
+          document.getElementById("popup").open();
+          trigger.textContent = 'Close popup'
+        } else {
+          document.getElementById("popup").close();
+        }
+      }
+
+      function popupClosed(event) {
+        const trigger = document.getElementById("trigger");
+        trigger.textContent = 'Open popup';
       }
     </script>
   </head>
@@ -44,13 +52,12 @@
     <div style='position: fixed; bottom: 8px; left: 8px; background-color: lightgreen; padding: 20px;'>
       <button id='trigger' onclick='popupTriggered(event)'>Open popup</button>
     </div>
-    <se-popup id='popup' anchor='trigger' anchor-direction='ne,en'>
+    <se-popup id='popup' anchor='trigger' anchor-direction='ne,en' onclose='popupClosed(event)'>
       <div id='popupcontent'>This is a popup. It has a bunch of content in it. Should be wide.</div>
     </se-popup>
 
     <h2>To Do</h2>
     <ul>
-      <li>Clicking outside popup should close it</li>
       <li>Fix bug where months and years don't extend and reveal the (red) background</li>
       <li>Refactor adding weeks</li>
       <li>Implement keyboard interaction</li>

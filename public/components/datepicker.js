@@ -231,7 +231,6 @@ export default class DatePicker extends HTMLElement {
    }
 
    triggerClicked() {
-      console.log("triggerClicked");
       if (this.popupIsOpen) {
          this.closeDatePicker();
       } else {
@@ -240,7 +239,6 @@ export default class DatePicker extends HTMLElement {
    }
 
    openDatePicker() {
-      console.log("opening");
       this.shadowRoot.appendChild(dialogTemplate.content.cloneNode(true));
       this.popupIsOpen = true;
       this.popup = this.shadowRoot.querySelector("se-popup");
@@ -466,12 +464,10 @@ export default class DatePicker extends HTMLElement {
    }
 
    closeDatePicker() {
-      console.log("closing");
       this.popup.close();
    }
 
    tidyUpAfterClose() {
-      console.log("tidying up");
       this.dialog = null;
       const popup = this.shadowRoot.querySelector("se-popup");
       const popupStyle=this.shadowRoot.querySelector("style#popup");

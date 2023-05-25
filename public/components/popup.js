@@ -58,10 +58,12 @@ export default class PopUp extends HTMLElement {
    }
 
    close() {
+      if (currentPopup !== this) return;
+
       this.popup.classList.add("closed");
       this.dispatchEvent(new Event("close"));
-      const glass = document.documentElement.querySelector("body > se-glass");
-      glass.parentElement.removeChild(glass);
+      this.glass.parentElement.removeChild(this.glass);
+      this.glass = null;
       currentPopup = null;
    }
 
@@ -95,11 +97,11 @@ export default class PopUp extends HTMLElement {
       this.style.right = "0";
       this.style.top = `${position.y}px`;
 
-      const glass = document.createElement("se-glass");
-      glass.addEventListener("click", () => {
+      this.glass = document.createElement("se-glass");
+      this.glass.addEventListener("click", () => {
          this.close();
       });
-      document.body.appendChild(glass);
+      document.body.appendChild(this.glass);
    }
 
    calcPosition(direction, anchorRect, popupRect, windowWidth, windowHeight) {
