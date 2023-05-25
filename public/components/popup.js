@@ -27,7 +27,7 @@ popupTemplate.innerHTML = `
 
 let currentPopup = null;
 
-export default class PopUp extends HTMLElement {
+class PopUp extends HTMLElement {
    constructor() {
       super();
       this.attachShadow({ mode: 'open' });

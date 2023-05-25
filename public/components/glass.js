@@ -16,7 +16,7 @@ glassTemplate.innerHTML = `
    </style>
    <div></div>`;
 
-export default class Glass extends HTMLElement {
+class Glass extends HTMLElement {
    constructor() {
       super();
       this.attachShadow({ mode: 'open' });

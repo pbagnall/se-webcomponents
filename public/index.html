@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en/GB">
   <head>
+    <title>Date Picker demo</title>
     <script src="/lib/dayjs.js"></script>
     <script type='module' src='/components/datepicker.js'></script>
     <style><!--
@@ -21,7 +22,7 @@
         output.replaceChildren(document.createTextNode(date.format("DD-MMM-YYYY")));
       }
 
-      function popupTriggered(event) {
+      function popupTriggered() {
         const trigger = document.getElementById("trigger");
         if (trigger.textContent === 'Open popup') {
           document.getElementById("popup").open();
@@ -31,7 +32,7 @@
         }
       }
 
-      function popupClosed(event) {
+      function popupClosed() {
         const trigger = document.getElementById("trigger");
         trigger.textContent = 'Open popup';
       }

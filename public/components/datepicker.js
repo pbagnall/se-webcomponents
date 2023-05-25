@@ -70,7 +70,7 @@ dialogTemplate.innerHTML = `
           overflow: auto;
           scrollbar-width: none;
           font-size: 0.8em;
-          font-family: Avenir;
+          font-family: Avenir, sans-serif;
       }
       
       #container::-webkit-scrollbar {
@@ -103,7 +103,7 @@ dialogTemplate.innerHTML = `
       se-popup thead button,
       se-popup tfoot button {
         height: 1.1rem;
-        font-family: Avenir;
+        font-family: Avenir, sans-serif;
         font-size: 0.8rem;
       }
       
@@ -204,7 +204,7 @@ dialogTemplate.innerHTML = `
    </se-popup>
 `;
 
-export default class DatePicker extends HTMLElement {
+class DatePicker extends HTMLElement {
    constructor() {
       super();
       this.attachShadow({mode: 'open'});
