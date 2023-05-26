@@ -378,11 +378,11 @@ class DatePicker extends HTMLElement {
       for (let i=0; i<number; i++) {
          const row = parent.firstElementChild;
          const month = row.querySelector('th');
+         const year = month ? month.nextSibling : null;
 
          // move month label to next row if appropriate
          if (month && month.rowSpan > 1) {
             const nextRow = row.nextSibling;
-            const year = month.nextSibling;
 
             month.rowSpan--;
             nextRow.appendChild(month);
@@ -392,9 +392,17 @@ class DatePicker extends HTMLElement {
                year.rowSpan--;
                nextRow.appendChild(year);
             }
+         } else {
+            // this ensures measuring the row height doesn't get
+            // thrown off by the month and date columns
+            // which may be taller if the text is rotated.
+            row.removeChild(month);
+            if (year && year.rowspan === 1) {
+               row.removeChild(year);
+            }
          }
 
-         const height = row.getBoundingClientRect().height;
+         const height = row.firstElementChild.getBoundingClientRect().height;
          parent.removeChild(row);
          this.dialog.scrollTop -= height;
       }
@@ -430,11 +438,9 @@ class DatePicker extends HTMLElement {
       const bottomProximity = tableHeight - dialogHeight - scroll;
 
       if (bottomProximity < 200) {
-         // get last week row
          this.addWeeksAtEnd(26);
          this.removeFirstNWeeks(26);
       } else if (scroll < 200) {
-         // get first week row
          this.addWeeksAtStart(26);
          this.removeLastNWeeks(26);
       }
