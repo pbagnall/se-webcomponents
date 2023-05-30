@@ -4,7 +4,7 @@
     <title>Date Picker demo</title>
     <script src="/lib/dayjs.js"></script>
     <script type='module' src='/components/datepicker.js'></script>
-    <style><!--
+    <style>
       body {
         font-family: Avenir, sans-serif;
         margin: 8px;
@@ -14,7 +14,19 @@
         background-color: white;
         padding: 0.25rem;
       }
-    --></style>
+
+      se-datepicker.alternate {
+        --oddMonthBackground: #eaeaff;
+        --evenMonthBackground: #ffffff;
+        --toolbarBackground: #8888ff;
+        --foreground: #000000;
+        --hoverColor: #ffffff;
+        --hoverBackgroundColor: #0000ff80;
+        --selectedColor: #ffffff;
+        --selectedBackgroundColor: #0000ff;
+        --todayBorderColor: #80ccff;
+      }
+    </style>
     <script type='text/javascript'>
       function dateChanged(event) {
         const output = document.getElementById('output');
@@ -43,7 +55,7 @@
     Selected date = <output id='output'>2023-05-12</output>
 
     <div style='position: absolute; top: 8px; right: 8px; background-color: lightgreen; padding: 20px;'>
-      <se-datepicker date='2023-1-12'></se-datepicker>
+      <se-datepicker class='alternate' date='2023-1-12'></se-datepicker>
     </div>
 
     <div style='position: fixed; bottom: 8px; right: 8px; background-color: lightgreen; padding: 20px;'>

@@ -54,19 +54,19 @@ const dialogTemplate = document.createElement('template');
 dialogTemplate.innerHTML = `
    <style id='popup'>
       #container {
-          --oddMonthBackground: #eaeaea;
-          --evenMonthBackground: #ffffff;
-          --toolbarBackground: #d0d0d0;
-          --foreground: #000000;
-          --hoverColor: #ffffff;
-          --hoverBackgroundColor: #ff000080;
-          --selectedColor: #ffffff;
-          --selectedBackgroundColor: #ff0000;
-          --todayBorderColor: orange;
+          --datepicker-oddMonthBackground: var(--oddMonthBackground, #eaeaea);
+          --datepicker-evenMonthBackground: var(--evenMonthBackground , #ffffff);
+          --datepicker-toolbarBackground: var(--toolbarBackground ,#d0d0d0);
+          --datepicker-foreground: var(--foreground ,#000000);
+          --datepicker-hoverColor: var(--hoverColor ,#ffffff);
+          --datepicker-hoverBackgroundColor: var(--hoverBackgroundColor ,#ff000080);
+          --datepicker-selectedColor: var(--selectedColor, #ffffff);
+          --datepicker-selectedBackgroundColor: var(--selectedBackgroundColor, #ff0000);
+          --datepicker-todayBorderColor: var(--todayBorderColor ,orange);
 
           top: 2rem;
           height: 16rem;
-          color: var(--foreground);
+          color: var(--datepicker-foreground);
           overflow: auto;
           scrollbar-width: none;
           font-size: 0.8em;
@@ -94,7 +94,7 @@ dialogTemplate.innerHTML = `
       se-popup tfoot {
          position: sticky;
          top: 0;
-         background-color: var(--toolbarBackground);
+         background-color: var(--datepicker-toolbarBackground);
          padding: 0;
          margin: 0;
          z-index: 1;
@@ -129,13 +129,13 @@ dialogTemplate.innerHTML = `
       se-popup tr.oddMonth,
       se-popup td.oddMonth, 
       se-popup th.oddMonth {
-          background-color: var(--oddMonthBackground);      
+          background-color: var(--datepicker-oddMonthBackground);      
       }
 
       se-popup tr.evenMonth,
       se-popup td.evenMonth,
       se-popup th.evenMonth {
-          background-color: var(--evenMonthBackground);      
+          background-color: var(--datepicker-evenMonthBackground);      
       }
       
       se-popup td {
@@ -153,17 +153,17 @@ dialogTemplate.innerHTML = `
       }
 
       se-popup td:hover span {
-          color: var(--hoverColor);
-          background-color: var(--hoverBackgroundColor);
+          color: var(--datepicker-hoverColor);
+          background-color: var(--datepicker-hoverBackgroundColor);
       }
       
       se-popup td.selected span {
-          color: var(--selectedColor);
-          background-color: var(--selectedBackgroundColor);
+          color: var(--datepicker-selectedColor);
+          background-color: var(--datepicker-selectedBackgroundColor);
       }
       
       se-popup td.today span {
-          border: 2px solid var(--todayBorderColor);
+          border: 2px solid var(--datepicker-todayBorderColor);
           padding: 0;
           margin: 0;
       }
