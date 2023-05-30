@@ -62,7 +62,7 @@ dialogTemplate.innerHTML = `
           --datepicker-hoverBackgroundColor: var(--hoverBackgroundColor ,#ff000080);
           --datepicker-selectedColor: var(--selectedColor, #ffffff);
           --datepicker-selectedBackgroundColor: var(--selectedBackgroundColor, #ff0000);
-          --datepicker-todayBorderColor: var(--todayBorderColor ,orange);
+          --datepicker-todayBorderColor: var(--todayBorderColor, orange);
 
           top: 2rem;
           height: 16rem;
