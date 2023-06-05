@@ -1,5 +1,3 @@
-import '/components/glass.js';
-
 const popupTemplate = document.createElement('template');
 popupTemplate.innerHTML = `
    <style>
@@ -35,6 +33,14 @@ class PopUp extends HTMLElement {
       this.popup = this.shadowRoot.querySelector('div#popup');
       this.anchorId = this.attributes['anchor'].value;
       this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
+
+      // this.addEventListener('click', (event) => { event.isInsidePopup = true; });
+      this.clickedOutside = (event) => {
+         // if (!event.isInsidePopup) {
+         if (event.composedPath()[0].closest("se-popup") !== this) {
+            this.close(event);
+         }
+      }
    }
 
    getElementByIdBreakout(id) {
@@ -62,9 +68,8 @@ class PopUp extends HTMLElement {
 
       this.popup.classList.add("closed");
       this.dispatchEvent(new Event("close"));
-      this.glass.parentElement.removeChild(this.glass);
-      this.glass = null;
       currentPopup = null;
+      document.documentElement.removeEventListener('click', this.clickedOutside);
    }
 
    open() {
@@ -97,11 +102,10 @@ class PopUp extends HTMLElement {
       this.style.right = "0";
       this.style.top = `${position.y}px`;
 
-      this.glass = document.createElement("se-glass");
-      this.glass.addEventListener("click", () => {
-         this.close();
+      // Let the event which caused this popup to open pass, before we start listening.
+      requestAnimationFrame(() => {
+         document.documentElement.addEventListener('click', this.clickedOutside);
       });
-      document.body.appendChild(this.glass);
    }
 
    calcPosition(direction, anchorRect, popupRect, windowWidth, windowHeight) {

@@ -261,6 +261,7 @@ class DatePicker extends HTMLElement {
    }
 
    jumpScroll(event) {
+      console.log("jumping");
       // get the currently displayed date (not the same as the current selection)
 
       // adjust by some amount, forwards/back one month/year

@@ -26,6 +26,17 @@
         --selectedBackgroundColor: #0000ff;
         --todayBorderColor: #80ccff;
       }
+
+      button#trigger {
+        position: absolute; bottom: 8px; left: 8px;
+        background-color: grey;
+        color: white;
+        border: 2px solid black;
+        border-radius: 3px;
+      }
+
+      .topright { position: absolute; top: 8px; right: 8px; }
+      .bottomright { position: fixed; bottom: 8px; right: 8px; }
     </style>
     <script type='text/javascript'>
       function dateChanged(event) {
@@ -51,44 +62,40 @@
     </script>
   </head>
   <body>
-    <se-datepicker date='2023-5-12' onchange='dateChanged(event)'></se-datepicker>
-    Selected date = <output id='output'>2023-05-12</output>
+    <section>
+       <se-datepicker date='2023-5-12' onchange='dateChanged(event)'></se-datepicker>
+       Selected date = <output id='output'>2023-05-12</output>
 
-    <div style='position: absolute; top: 8px; right: 8px; background-color: lightgreen; padding: 20px;'>
-      <se-datepicker class='alternate' date='2023-5-12'></se-datepicker>
-    </div>
+       <se-datepicker class='topright alternate' date='2023-5-12'></se-datepicker>
+       <se-datepicker class='bottomright' date='2023-1-12'></se-datepicker>
 
-    <div style='position: fixed; bottom: 8px; right: 8px; background-color: lightgreen; padding: 20px;'>
-      <se-datepicker date='2023-1-12'></se-datepicker>
-    </div>
+       <button id='trigger' onclick='popupTriggered(event)'>Open popup</button>
+       <se-popup id='popup' anchor='trigger' anchor-direction='se,em,en' onclose='popupClosed(event)'>
+         <div id='popupcontent'>This is a popup. It has a bunch of content in it.</div>
+       </se-popup>
+    </section>
+    <section>
+       <h2>To Do</h2>
+       <ul>
+         <li>Fix bug where months and years don't extend and reveal the (red) background</li>
+         <li>Refactor adding weeks</li>
+         <li>Implement keyboard interaction</li>
+         <li>Implement month/year up/down buttons</li>
+         <li>Implement date parsing for typed input</li>
+         <li>Implement canned dates options</li>
+       </ul>
 
-    <div style='position: fixed; bottom: 8px; left: 8px; background-color: lightgreen; padding: 20px;'>
-      <button id='trigger' onclick='popupTriggered(event)'>Open popup</button>
-    </div>
-    <se-popup id='popup' anchor='trigger' anchor-direction='ne,en' onclose='popupClosed(event)'>
-      <div id='popupcontent'>This is a popup. It has a bunch of content in it. Should be wide.</div>
-    </se-popup>
-
-    <h2>To Do</h2>
-    <ul>
-      <li>Fix bug where months and years don't extend and reveal the (red) background</li>
-      <li>Refactor adding weeks</li>
-      <li>Implement keyboard interaction</li>
-      <li>Implement month/year up/down buttons</li>
-      <li>Implement date parsing for typed input</li>
-      <li>Implement canned dates options</li>
-    </ul>
-
-    <h2>Future ideas</h2>
-    <ul>
-      <li>Add API for adding "busy" indicators to calendar</li>
-      <li>Quick dates</li>
-      <li>
-        If today and selected date are close together, then when the picker opens
-        it should scroll so both are visible
-      </li>
-      <li></li>
-      <li></li>
-    </ul>
+       <h2>Future ideas</h2>
+       <ul>
+         <li>Add API for adding "busy" indicators to calendar</li>
+         <li>Quick dates</li>
+         <li>
+           If today and selected date are close together, then when the picker opens
+           it should scroll so both are visible
+         </li>
+         <li></li>
+         <li></li>
+       </ul>
+    </section>
   </body>
 </html>
