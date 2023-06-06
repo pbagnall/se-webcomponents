@@ -282,10 +282,10 @@ class DatePicker extends HTMLElement {
       // Does the period marker already exist?
       // If so
       if (periodMarker) {
-         periodMarker.rowSpan++;
          if (periodMarker.parentElement.dataset['beginning'] > row.dataset['beginning']) {
             row.appendChild(periodMarker);
          }
+         periodMarker.rowSpan++;
       } else {
          const periodMarkerCell = document.createElement("th");
          periodMarkerCell.id = idprefix+startDate.format(idformat);
