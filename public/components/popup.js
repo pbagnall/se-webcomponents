@@ -3,7 +3,7 @@ popupTemplate.innerHTML = `
    <style>
       div#popup {
          border: 1px solid;      
-         background-color: red;
+         background-color: white;
          position: absolute;
          width: auto;
          z-index: 1000;
@@ -34,9 +34,7 @@ class PopUp extends HTMLElement {
       this.anchorId = this.attributes['anchor'].value;
       this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
 
-      // this.addEventListener('click', (event) => { event.isInsidePopup = true; });
       this.clickedOutside = (event) => {
-         // if (!event.isInsidePopup) {
          if (event.composedPath()[0].closest("se-popup") !== this) {
             this.close(event);
          }
