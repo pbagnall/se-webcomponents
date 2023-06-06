@@ -5,6 +5,7 @@ popupTemplate.innerHTML = `
          --popup-borderWidth: var(--borderWidth, 1px);
          --popup-borderStyle: var(--borderStyle, solid);
          --popup-backgroundColor: var(--backgroundColor, white);
+         --popup-padding: var(--padding, 0.25rem);
       
          border-width: var(--popup-borderWidth);      
          border-style: var(--popup-borderStyle);
@@ -15,7 +16,7 @@ popupTemplate.innerHTML = `
       }
       
       div#inner {
-         position: absolute;
+         padding: var(--popup-padding);
       }
       
       div#popup.closed {
@@ -23,7 +24,7 @@ popupTemplate.innerHTML = `
       }
    </style>
    <div id='popup' class='closed'>
-      <div class='inner'>
+      <div id='inner'>
          <slot>Popup content</slot>
       </div>
    </div>`;

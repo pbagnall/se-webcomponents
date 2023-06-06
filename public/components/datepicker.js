@@ -77,6 +77,10 @@ dialogTemplate.innerHTML = `
          background: transparent;
       }
       
+      se-popup {
+         --padding: 0;
+      }
+      
       se-popup::-webkit-scrollbar {
          background: transparent;
          width: 0;

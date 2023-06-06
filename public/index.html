@@ -10,9 +10,9 @@
         margin: 8px;
       }
 
-      #popupcontent {
-        background-color: white;
-        padding: 0.25rem;
+      se-popup {
+        --backgroundColor: #ffffaa;
+        --padding: 0.25rem;
       }
 
       se-datepicker.alternate {
@@ -71,7 +71,7 @@
 
        <button id='trigger' onclick='popupTriggered(event)'>Open popup</button>
        <se-popup id='popup' anchor='trigger' anchor-direction='se,em,en' onclose='popupClosed(event)'>
-         <div id='popupcontent'>This is a popup. It has a bunch of content in it.</div>
+         This is a popup. It has a bunch of content in it.
        </se-popup>
     </section>
     <section>
