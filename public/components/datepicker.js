@@ -379,29 +379,28 @@ class DatePicker extends HTMLElement {
       for (let i=0; i<number; i++) {
          const row = parent.firstElementChild;
          const month = row.querySelector('th');
-         const year = month ? month.nextSibling : null;
+         const year = month.nextSibling;
+         const nextRow = row.nextSibling;
 
          // move month label to next row if appropriate
          if (month && month.rowSpan > 1) {
-            const nextRow = row.nextSibling;
-
             month.rowSpan--;
             nextRow.appendChild(month);
-
-            // move year label to next row if appropriate
-            if (year && year.rowSpan > 1) {
-               year.rowSpan--;
-               nextRow.appendChild(year);
-            }
-         } else {
+         } else if (month) {
             // this ensures measuring the row height doesn't get
             // thrown off by the month and date columns
             // which may be taller if the text is rotated.
             row.removeChild(month);
-            if (year && year.rowspan === 1) {
-               row.removeChild(year);
-            }
          }
+
+         // move year label to next row if appropriate
+         if (year && year.rowSpan > 1) {
+            year.rowSpan--;
+            nextRow.appendChild(year);
+         } else if (year) {
+            row.removeChild(year);
+         }
+
 
          const height = row.firstElementChild.getBoundingClientRect().height;
          parent.removeChild(row);
