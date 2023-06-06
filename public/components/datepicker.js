@@ -10,7 +10,6 @@ datePickerTemplate.innerHTML = `
             border-radius: 0.1875rem;
             height: 1.5rem;
             font-family: Avenir, sans-serif;
-            /*position: relative;*/
         }
 
         input.field {
