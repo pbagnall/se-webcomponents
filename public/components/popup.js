@@ -2,11 +2,16 @@ const popupTemplate = document.createElement('template');
 popupTemplate.innerHTML = `
    <style>
       div#popup {
-         border: 1px solid;      
-         background-color: white;
+         --popup-borderWidth: var(--borderWidth, 1px);
+         --popup-borderStyle: var(--borderStyle, solid);
+         --popup-backgroundColor: var(--backgroundColor, white);
+      
+         border-width: var(--popup-borderWidth);      
+         border-style: var(--popup-borderStyle);
+         background-color: var(--popup-backgroundColor);
          position: absolute;
          width: auto;
-         z-index: 1000;
+         z-index: 10;
       }
       
       div#inner {
