@@ -442,10 +442,10 @@ class DatePicker extends HTMLElement {
       const scroll = this.dialog.scrollTop;
       const bottomProximity = tableHeight - dialogHeight - scroll;
 
-      if (bottomProximity < 200) {
+      if (bottomProximity < dialogHeight * 2) {
          this.addWeeksAtEnd(26);
          this.removeFirstNWeeks(26);
-      } else if (scroll < 200) {
+      } else if (scroll < dialogHeight * 2) {
          this.addWeeksAtStart(26);
          this.removeLastNWeeks(26);
       }
