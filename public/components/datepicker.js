@@ -274,7 +274,7 @@ class DatePicker extends HTMLElement {
       // scroll to that date
    }
 
-   addPeriodMarker(period, startOrEnd, parent, row, startDate) {
+   addPeriodMarker(period, parent, row, startDate) {
       const params = {
          month: ["M", "YYYYMM", "MMM", "month"],
          year: ["Y", "YYYY", "YYYY", "year"]
@@ -293,7 +293,6 @@ class DatePicker extends HTMLElement {
          const periodMarkerCell = document.createElement("th");
          periodMarkerCell.id = idprefix+startDate.format(idformat);
          periodMarkerCell.classList.add(klass);
-         periodMarkerCell.classList.add(startOrEnd);
          if (period === "month") {
             periodMarkerCell.classList.add(startDate.month() % 2 === 0 ? "oddPeriod" : "evenPeriod");
          } else { // period == year
@@ -306,39 +305,43 @@ class DatePicker extends HTMLElement {
       }
    }
 
-   addWeeksAtStart(weeks) {
-      const parent = this.dialog.querySelector("tbody");
+   buildWeek(tbody, startDate) {
+      const row = document.createElement("tr");
       const today = dayjs();
-      let first = parent.firstElementChild;
+      const startMonth = startDate.month();
+      row.classList.add(startMonth % 2 === 0 ? "oddPeriod" : "evenPeriod");
+      row.dataset['beginning'] = startDate.format('YYYY-MM-DD');
+
+      let weekday = startDate;
+      for (let day=0; day<7; day++) {
+         const cell = document.createElement("td");
+         if (weekday.isSame(today, 'day')) cell.classList.add("today");
+         if (weekday.isSame(this.dateValue, 'day')) cell.classList.add("selected");
+         if (weekday.month() !== startDate.month()) {
+            cell.classList.add(weekday.month() % 2 === 0 ? "oddPeriod" : "evenPeriod");
+         }
+
+         const span = document.createElement("span");
+         span.appendChild(document.createTextNode(weekday.format('D')));
+         cell.appendChild(span);
+         row.appendChild(cell);
+         weekday = weekday.add(1, 'day');
+      }
+
+      const endOfWeek = startDate.add(6, 'day');
+      this.addPeriodMarker('month', tbody, row, endOfWeek);
+      this.addPeriodMarker('year', tbody, row, endOfWeek);
+      return row;
+   }
+
+   addWeeksAtStart(weeks) {
+      const tbody = this.dialog.querySelector("tbody");
+      let first = tbody.firstElementChild;
       let startDate = dayjs(first.dataset['beginning']).subtract(7, 'day');
 
       for (let i=0; i<weeks; i++) {
-         const row = document.createElement("tr");
-         const startMonth = startDate.month();
-         row.classList.add(startMonth % 2 === 0 ? "oddPeriod" : "evenPeriod");
-         row.dataset['beginning'] = startDate.format('YYYY-MM-DD');
-
-         let weekday = startDate;
-         for (let day=0; day<7; day++) {
-            const cell = document.createElement("td");
-            if (weekday.isSame(today, 'day')) cell.classList.add("today");
-            if (weekday.isSame(this.dateValue, 'day')) cell.classList.add("selected");
-            if (weekday.month() !== startDate.month()) {
-               cell.classList.add(weekday.month() % 2 === 0 ? "oddPeriod" : "evenPeriod");
-            }
-
-            const span = document.createElement("span");
-            span.appendChild(document.createTextNode(weekday.format('D')));
-            cell.appendChild(span);
-            row.appendChild(cell);
-            weekday = weekday.add(1, 'day');
-         }
-
-         const endOfWeek = startDate.add(6, 'day');
-         this.addPeriodMarker('month', 'start', parent, row, endOfWeek);
-         this.addPeriodMarker('year', 'start', parent, row, endOfWeek);
-
-         parent.insertBefore(row, first);
+         const row = this.buildWeek(tbody, startDate);
+         tbody.insertBefore(row, first);
          this.dialog.scrollTop += first.getBoundingClientRect().height;
          first = row;
          startDate = startDate.subtract(7, 'day');
@@ -346,38 +349,16 @@ class DatePicker extends HTMLElement {
    }
 
    addWeeksAtEnd(weeks, startDate) {
-      const today = dayjs();
-      const parent = this.dialog.querySelector("tbody");
+      const tbody = this.dialog.querySelector("tbody");
       if (typeof startDate === 'undefined') {
-         startDate = dayjs(parent.lastElementChild.dataset['beginning']).add(7, 'day');
+         startDate = dayjs(tbody.lastElementChild.dataset['beginning']).add(7, 'day');
       }
       startDate = startDate.day(1);
 
       for (let i=0; i<weeks; i++) {
-         const row = document.createElement("tr");
-         const startMonth = startDate.month();
-         row.classList.add(startMonth % 2 === 0 ? "oddPeriod" : "evenPeriod");
-         row.dataset['beginning'] = startDate.format('YYYY-MM-DD');
-
-         for (let day=0; day<7; day++) {
-            const cell = document.createElement("td");
-            if (startDate.isSame(today, 'day')) cell.classList.add("today");
-            if (startDate.isSame(this.dateValue, 'day')) cell.classList.add("selected");
-            if (startDate.month() !== startMonth) {
-               cell.classList.add(startDate.month() % 2 === 0 ? "oddPeriod" : "evenPeriod");
-            }
-            const span = document.createElement("span");
-            span.appendChild(document.createTextNode(startDate.format('D')));
-            cell.appendChild(span);
-            row.appendChild(cell);
-            startDate = startDate.add(1, 'day');
-         }
-
-         const endOfWeek = startDate.subtract(1, 'day');
-         this.addPeriodMarker("month", "end", parent, row, endOfWeek);
-         this.addPeriodMarker("year", "end", parent, row, endOfWeek);
-
-         parent.appendChild(row);
+         const row = this.buildWeek(tbody, startDate);
+         tbody.appendChild(row);
+         startDate = startDate.add(7, 'day');
       }
    }
 
@@ -408,7 +389,6 @@ class DatePicker extends HTMLElement {
          } else if (year) {
             row.removeChild(year);
          }
-
 
          const height = row.firstElementChild.getBoundingClientRect().height;
          parent.removeChild(row);
