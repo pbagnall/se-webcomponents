@@ -1,97 +1,226 @@
 <!doctype html>
 <html lang="en/GB">
-  <head>
-    <title>Date Picker demo</title>
-    <script src="/lib/dayjs.js"></script>
-    <script type='module' src='/components/datepicker.js'></script>
-    <style>
-      body {
-        font-family: Avenir, sans-serif;
-        margin: 8px;
-      }
+<head>
+   <title>Date Picker demo</title>
+   <script src="/lib/dayjs.js"></script>
+   <script type='module' src='/components/datepicker.js'></script>
+   <style>
+      @media screen {
+         body {
+            font-family: Avenir, sans-serif;
+            margin: 8px;
+         }
 
-      se-popup {
-        --backgroundColor: #ffffaa;
-        --padding: 0.25rem;
-      }
+         se-popup {
+            --backgroundColor: #ffffaa;
+            --padding: 0.25rem;
+         }
 
-      se-datepicker.alternate {
-        --oddMonthBackground: #eaeaff;
-        --evenMonthBackground: #ffffff;
-        --toolbarBackground: #8888ff;
-        --foreground: #000000;
-        --hoverColor: #ffffff;
-        --hoverBackgroundColor: #0000ff80;
-        --selectedColor: #ffffff;
-        --selectedBackgroundColor: #0000ff;
-        --todayBorderColor: #80ccff;
-      }
+         se-datepicker.alternate {
+            --oddMonthBackground: #eaeaff;
+            --evenMonthBackground: #ffffff;
+            --toolbarBackground: #8888ff;
+            --foreground: #000000;
+            --hoverColor: #ffffff;
+            --hoverBackgroundColor: #0000ff80;
+            --selectedColor: #ffffff;
+            --selectedBackgroundColor: #0000ff;
+            --todayBorderColor: #80ccff;
+         }
 
-      button#trigger {
-        position: absolute; bottom: 8px; left: 8px;
-        background-color: grey;
-        color: white;
-        border: 2px solid black;
-        border-radius: 3px;
-      }
+         button#trigger {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background-color: grey;
+            color: white;
+            border: 2px solid black;
+            border-radius: 3px;
+         }
 
-      .topright { position: absolute; top: 8px; right: 8px; }
-      .bottomright { position: fixed; bottom: 8px; right: 8px; }
-    </style>
-    <script type='text/javascript'>
+         .topright { position: absolute; top: 8px; right: 8px; }
+         .bottomright { position: fixed; bottom: 8px; right: 8px; }
+
+         section {
+            margin: 0;
+         }
+
+         h1 {
+            margin: 0.5rem 0 0.25rem 0;
+         }
+
+         details {
+            background-color: white;
+            border: 1px solid #bbbbbb;
+            padding: 0 0.5rem;
+            margin-bottom: 0.5rem;
+         }
+
+         summary {
+            margin: 0 -0.5rem 0 -0.5rem;
+            padding: 0 0.5rem;
+            font-size: 120%;
+            background-color: #eeeeee;
+         }
+
+         details[open] summary {
+            border-bottom: 1px solid #bbbbbb;
+            margin: 0 -0.5rem 0.5rem -0.5rem;
+         }
+
+         details ul {
+            margin: 0;
+            padding: 0 1.25rem;
+         }
+
+         details.li {
+            border: none;
+            background-color: transparent;
+            margin: 0;
+            padding: 0;
+         }
+
+         details.li summary {
+            margin: 0;
+            padding: 0;
+            border: none;
+            font-size: 100%;
+            background-color: transparent;
+         }
+
+         dl {
+            margin: 0;
+         }
+      }
+   </style>
+   <script type='text/javascript'>
       function dateChanged(event) {
-        const output = document.getElementById('output');
-        const date = dayjs(event.value);
-        output.replaceChildren(document.createTextNode(date.format("DD-MMM-YYYY")));
+         const output = document.getElementById('output');
+         const date = dayjs(event.value);
+         output.replaceChildren(document.createTextNode(date.format("DD-MMM-YYYY")));
       }
 
       function popupTriggered() {
-        const trigger = document.getElementById("trigger");
-        if (trigger.textContent === 'Open popup') {
-          document.getElementById("popup").open();
-          trigger.textContent = 'Close popup'
-        } else {
-          document.getElementById("popup").close();
-        }
+         const trigger = document.getElementById("trigger");
+         if (trigger.textContent === 'Open popup') {
+            document.getElementById("popup").open();
+            trigger.textContent = 'Close popup'
+         } else {
+            document.getElementById("popup").close();
+         }
       }
 
       function popupClosed() {
-        const trigger = document.getElementById("trigger");
-        trigger.textContent = 'Open popup';
+         const trigger = document.getElementById("trigger");
+         trigger.textContent = 'Open popup';
       }
-    </script>
-  </head>
-  <body>
-    <section>
-       <se-datepicker date='2023-5-12' onchange='dateChanged(event)'></se-datepicker>
-       Selected date = <output id='output'>2023-05-12</output>
+   </script>
+</head>
+<body>
+   <section>
+      <se-datepicker date='2023-5-12' onchange='dateChanged(event)'></se-datepicker>
+      Selected date = <output id='output'>12-May-2023</output>
 
-       <se-datepicker class='topright alternate' date='2023-5-12'></se-datepicker>
-       <se-datepicker class='bottomright' date='2023-1-12'></se-datepicker>
+      <se-datepicker class='topright alternate' date='2023-5-12'></se-datepicker>
+      <se-datepicker class='bottomright' date='2023-1-12'></se-datepicker>
 
-       <button id='trigger' onclick='popupTriggered(event)'>Open popup</button>
-       <se-popup id='popup' anchor='trigger' anchor-direction='se,em,en' onclose='popupClosed(event)'>
-         This is a popup. It has a bunch of content in it.
-       </se-popup>
-    </section>
-    <section>
-       <h2>To Do</h2>
-       <ul>
-         <li>Implement keyboard interaction</li>
-         <li>Implement month/year up/down buttons</li>
-         <li>Implement date parsing for typed input</li>
-         <li>Implement canned dates options</li>
-       </ul>
+      <button id='trigger' onclick='popupTriggered()'>Open popup</button>
+      <se-popup id='popup' anchor='trigger' anchor-direction='se,em,en' onclose='popupClosed()'>
+         This is a popup. It has a bunch of content in it. And then some more, and some more.
+      </se-popup>
+   </section>
+   <section>
+      <h1>Date picker web component</h1>
+      <details open>
+         <summary>Features</summary>
+         <ul>
+            <li>Multiple month display - time is a continuum!</li>
+            <li>Infinitely Scrollable calendar</li>
+            <li>
+               <details class='li'>
+                  <summary>Styleable using CSS custom variables</summary>
+                  <dl>
+                     <dt><code>--oddMonthBackground</code></dt>
+                     <dd>background colour for odd months</dd>
 
-       <h2>Future ideas</h2>
-       <ul>
-         <li>Add API for adding "busy" indicators to calendar</li>
-         <li>Quick dates</li>
-         <li>
-           If today and selected date are close together, then when the picker opens
-           it should scroll so both are visible
-         </li>
-       </ul>
-    </section>
-  </body>
+                     <dt><code>--evenMonthBackground</code></dt>
+                     <dd>background colour for even months</dd>
+
+                     <dt><code>--toolbarBackground</code></dt>
+                     <dd>
+                        background for the toolbar with the days of the week and up/down month/year buttons
+                     </dd>
+
+                     <dt><code>--foreground</code></dt>
+                     <dd>Colour of dates, days of week, and all other text</dd>
+
+                     <dt><code>--hoverColor</code></dt>
+                     <dd>Text colour of dates when being hovered over</dd>
+
+                     <dt><code>--hoverBackgroundColor</code></dt>
+                     <dd>Background colour of dates when being hovered over</dd>
+
+                     <dt><code>--selectedColor</code></dt>
+                     <dd>Text colour of selected date</dd>
+
+                     <dt><code>--selectedBackgroundColor</code></dt>
+                     <dd>Background colour of selected date</dd>
+
+                     <dt><code>--todayBorderColor</code></dt>
+                     <dd>Colour of border around today's date</dd>
+                  </dl>
+               </details>
+            </li>
+         </ul>
+      </details>
+      <details>
+         <summary>To Do</summary>
+         <ul>
+            <li>Implement keyboard interaction</li>
+            <ul>
+               <li>Ctrl-Up = previous month - work out algo</li>
+               <li>Ctrl-Down = next month - work out algo</li>
+               <li>PageUp = previous year</li>
+               <li>PageDown = next year</li>
+            </ul>
+            <li>
+               Fix popup bug, where it's appearing in "em" position, even though it's
+               too close to the bottom.
+            </li>
+            <li>Implement month/year up/down buttons</li>
+            <li>Implement date parsing for typed input</li>
+            <li>Implement canned dates options</li>
+            <li>Add a decent icon for the input field</li>
+         </ul>
+      </details>
+
+      <details>
+         <summary>Future ideas</summary>
+         <ul>
+            <li>Add API for adding "busy" indicators to calendar</li>
+            <li>
+               If today and selected date are close together, then when the picker opens
+               it should scroll so both are visible
+            </li>
+            <li>
+               Extend into DateRangePicker - can register for both se-datepicker and
+               se-datarangepicker
+            </li>
+            <li>
+               Options:
+               <ul>
+                  <li>Exclude weekend (default: false), from usecase</li>
+                  <li>Weeks starts on Monday/Sunday (default: Monday), maybe from locale, maybe user prefs</li>
+                  <li>Date format in input field (default: DD MMM YYYY), from locale</li>
+               </ul>
+            </li>
+            <li>
+               CSS styles:
+               <ul>
+                  <li>Calendar Layout: D M Y or M D Y or Y M D (default: D M Y)</li>
+               </ul>
+            </li>
+         </ul>
+   </section>
+</body>
 </html>

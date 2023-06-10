@@ -59,14 +59,6 @@ class PopUp extends HTMLElement {
       } while (true);
    }
 
-   toggle() {
-      if (this.popup.classList.contains("closed")) {
-         this.open();
-      } else {
-         this.close();
-      }
-   }
-
    close() {
       if (currentPopup !== this) return;
 

@@ -22,11 +22,13 @@ datePickerTemplate.innerHTML = `
             width: 4.5rem;
         }
         
-        input.field:focus {
+        input.field:focus,
+        button.trigger:focus {
             outline: none;
         }
 
-        div.datepicker:has(input.field:focus) {
+        div.datepicker:has(input.field:focus),
+        div.datepicker:has(button.trigger:focus) {
             outline: Highlight auto 2px ;
             outline: -webkit-focus-ring-color auto 2px;
         }
@@ -45,7 +47,7 @@ datePickerTemplate.innerHTML = `
         div.datepicker       button.trigger:active { background-color: #aaaaaa; }
     </style>
     <div class='datepicker' id='date-picker'>
-    <input class='field' type='text' value='no selection' /><button class='trigger'>C</button>
+    <input class='field' type='text' value='no selection' /><button tabindex=0 class='trigger'>C</button>
     </div>
 `;
 
@@ -218,6 +220,7 @@ class DatePicker extends HTMLElement {
       this.scrolled = () => this.scrolledDialog();
       this.popupOpened = () => this.popupOpenedHandler();
       this.popupClosed = () => this.popupClosedHandler();
+      this.keyboardHandler = (e) => this.keyboard(e);
 
       this.dateValue = dayjs(this.attributes['date'].value);
       if (isNaN(this.dateValue.valueOf())) {
@@ -242,16 +245,22 @@ class DatePicker extends HTMLElement {
    }
 
    openDatePicker() {
+      const jumpScroll = (e) => this.jumpScroll(e);
+
       this.shadowRoot.appendChild(dialogTemplate.content.cloneNode(true));
       this.popupIsOpen = true;
       this.popup = this.shadowRoot.querySelector("se-popup");
       this.dialog = this.shadowRoot.querySelector("#container");
       this.dialog.addEventListener('scroll', this.scrolled);
+      this.input = this.shadowRoot.querySelector("input.field");
+
+      this.trigger.addEventListener("keydown", this.keyboardHandler);
+      this.trigger.focus();
+
       const upMonth = this.shadowRoot.getElementById('backmonth');
       const upYear = this.shadowRoot.getElementById('backyear');
       const downMonth = this.shadowRoot.getElementById('forwardmonth');
       const downYear = this.shadowRoot.getElementById('forwardyear');
-      const jumpScroll = (e) => this.jumpScroll(e);
       upMonth.addEventListener("click", jumpScroll);
       upYear.addEventListener("click", jumpScroll);
       downMonth.addEventListener("click", jumpScroll);
@@ -263,13 +272,89 @@ class DatePicker extends HTMLElement {
       this.popup.open();
    }
 
+   keyboardCommands = {
+      "ArrowDown":    { type: 'delta', delta: 1, unit: "week" },
+      "ArrowUp":      { type: 'delta', delta: -1, unit: "week" },
+      "ArrowLeft":    { type: 'delta', delta: -1, unit: "day" },
+      "ArrowRight":   { type: 'delta', delta: 1, unit: "day" },
+
+      // this should jump by ~one month, preserving day of week, 4 or 5 weeks
+      "c-ArrowDown":  { type: "month", month: 1, unit: "week" },
+      "c-ArrowUp":    { type: "month", month: -1, unit: "week" },
+
+      "PageUp":       { type: 'delta', delta: -1, unit: "year" },
+      "PageDown":     { type: 'delta', delta: 1, unit: "year" },
+
+      "c-ArrowLeft":  { type: "day", day: 1 },
+      "c-ArrowRight": { type: "day", day: 7 },
+      "Home":         { type: "day", day: 1 },
+      "End":          { type: "day", day: 7 },
+
+      "Enter":        { type: "commit" }
+   };
+
+   keyboard(event) {
+      const tbody = this.dialog.querySelector("tbody");
+      const key = event.ctrlKey ? "c-" + event.key : event.key;
+
+      const change = this.keyboardCommands[key];
+      if (typeof change === 'undefined') return;
+
+      this.highlightDate(tbody, this.dateValue, false);
+      switch (change.type) {
+         case "delta":
+            this.dateValue = this.dateValue.add(change.delta, change.unit);
+            break;
+         case "day":
+            if (this.dateValue.day()===0) this.dateValue = this.dateValue.subtract(1, 'day');
+            this.dateValue =  this.dateValue.day(change.day);
+            break;
+         case "month":
+            console.info("not implemented");
+            break;
+         case "commit":
+            this.closeDatePicker();
+            this.fireDateChangeEvent(this.dateValue, true);
+      }
+
+      console.log(this.dateValue.format('YYYY-MM-DD'));
+
+      this.highlightDate(tbody, this.dateValue, true);
+      this.fireDateChangeEvent(this.dateValue, false);
+      event.preventDefault();
+   }
+
+   getSelectionWeek(tbody, date) {
+      const week = date.day() === 0 ? date.subtract(6, 'day') : date.day(1);
+      const selector = `tr[data-beginning=\"${week.format('YYYY-MM-DD')}\"]`;
+      return tbody.querySelector(selector);
+   }
+
+   highlightDate(tbody, date, show) {
+      const weekElem = this.getSelectionWeek(tbody, date);
+
+      // for dateValue monday = 1, sunday = 0
+      // item is zero based, so monday needs to be 0, sunday = 6
+      const dayElem = weekElem.children.item((date.day()+6) % 7);
+      if (show) {
+         dayElem.classList.add("selected");
+      } else {
+         dayElem.classList.remove("selected");
+      }
+   }
+
    jumpScroll(event) {
-      console.log("jumping");
+      console.log("jumping " + event.target.id);
+
       // get the currently displayed date (not the same as the current selection)
+      //    i.e. which week is closest to the middle of the datepicker
+      //    unless a date is already focussed (either by keyboard or mouseover)
 
       // adjust by some amount, forwards/back one month/year
 
-      // wipe the calendar and rebuild around that date
+      // work out what date range should be in the HTML
+      //   if there's overlap with the current HTML then add/remove rows to the start/end as appropriate
+      //   otherwise wipe the calendar and rebuild around that date
 
       // scroll to that date
    }
@@ -464,6 +549,7 @@ class DatePicker extends HTMLElement {
    }
 
    tidyUpAfterClose() {
+      this.trigger.removeEventListener("keydown", this.keyboardHandler);
       this.dialog = null;
       const popup = this.shadowRoot.querySelector("se-popup");
       const popupStyle=this.shadowRoot.querySelector("style#popup");
@@ -498,12 +584,17 @@ class DatePicker extends HTMLElement {
 
       if (!this.dateValue.isSame(date, 'day')) {
          this.dateValue = date;
-         this.input.value = date.format("DD MMM YYYY");
-         const dateChangedEvent = new Event("change");
-         dateChangedEvent.value = this.dateValue.format('YYYY-MM-DD');
-         this.dispatchEvent(dateChangedEvent);
+         this.fireDateChangeEvent(date, true);
          this.closeDatePicker();
       }
+   }
+
+   fireDateChangeEvent(date, final) {
+      this.input.value = date.format("DD MMM YYYY");
+      const dateChangedEvent = new Event("change");
+      dateChangedEvent.final = final;
+      dateChangedEvent.value = this.dateValue.format('YYYY-MM-DD');
+      this.dispatchEvent(dateChangedEvent);
    }
 }
 window.customElements.define('se-datepicker', DatePicker);
