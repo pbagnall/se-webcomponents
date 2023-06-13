@@ -56,11 +56,11 @@ dialogTemplate.innerHTML = `
    <style id='popup'>
       #container {
           --datepicker-oddPeriodBackground: var(--oddPeriodBackground, #eaeaea);
-          --datepicker-evenPeriodBackground: var(--evenPeriodBackground , #ffffff);
-          --datepicker-toolbarBackground: var(--toolbarBackground ,#d0d0d0);
-          --datepicker-foreground: var(--foreground ,#000000);
-          --datepicker-hoverColor: var(--hoverColor ,#ffffff);
-          --datepicker-hoverBackgroundColor: var(--hoverBackgroundColor ,#ff000080);
+          --datepicker-evenPeriodBackground: var(--evenPeriodBackground, #ffffff);
+          --datepicker-toolbarBackground: var(--toolbarBackground, #d0d0d0);
+          --datepicker-foreground: var(--foreground, #000000);
+          --datepicker-hoverColor: var(--hoverColor, #ffffff);
+          --datepicker-hoverBackgroundColor: var(--hoverBackgroundColor, #ff000080);
           --datepicker-selectedColor: var(--selectedColor, #ffffff);
           --datepicker-selectedBackgroundColor: var(--selectedBackgroundColor, #ff0000);
           --datepicker-todayBorderColor: var(--todayBorderColor, orange);
@@ -73,7 +73,7 @@ dialogTemplate.innerHTML = `
           font-size: 0.8em;
           font-family: Avenir, sans-serif;
       }
-      
+
       #container::-webkit-scrollbar {
          width: 0;
          background: transparent;
@@ -273,27 +273,36 @@ class DatePicker extends HTMLElement {
    }
 
    keyboardCommands = {
-      "ArrowDown":    { type: 'delta', delta: 1, unit: "week" },
-      "ArrowUp":      { type: 'delta', delta: -1, unit: "week" },
-      "ArrowLeft":    { type: 'delta', delta: -1, unit: "day" },
-      "ArrowRight":   { type: 'delta', delta: 1, unit: "day" },
+      // move by 1 day or 1 week
+      "ArrowDown":    { type: 'delta', delta: 7 },
+      "ArrowUp":      { type: 'delta', delta: -7 },
+      "ArrowLeft":    { type: 'delta', delta: -1 },
+      "ArrowRight":   { type: 'delta', delta: 1 },
 
       // this should jump by ~one month, preserving day of week, 4 or 5 weeks
-      "c-ArrowDown":  { type: "month", month: 1, unit: "week" },
-      "c-ArrowUp":    { type: "month", month: -1, unit: "week" },
+      "c-ArrowDown":  { type: "month", direction: 1 },
+      "c-ArrowUp":    { type: "month", direction: -1 },
 
-      "PageUp":       { type: 'delta', delta: -1, unit: "year" },
-      "PageDown":     { type: 'delta', delta: 1, unit: "year" },
+      // this jumps by ~1 year, preserving day of the week. 52 weeks
+      "PageUp":       { type: 'delta', delta: -364 },
+      "PageDown":     { type: 'delta', delta: 364 },
 
+      // move to start or end of week
       "c-ArrowLeft":  { type: "day", day: 1 },
       "c-ArrowRight": { type: "day", day: 7 },
       "Home":         { type: "day", day: 1 },
       "End":          { type: "day", day: 7 },
 
-      "Enter":        { type: "commit" }
+      // commit the date and close the popup
+      "Enter":        { type: "commit" },
+
+      // cancel the change and close the popup
+      "Escape":       { type: "cancel" }
    };
 
    keyboard(event) {
+      event.preventDefault();
+
       const tbody = this.dialog.querySelector("tbody");
       const key = event.ctrlKey ? "c-" + event.key : event.key;
 
@@ -303,25 +312,58 @@ class DatePicker extends HTMLElement {
       this.highlightDate(tbody, this.dateValue, false);
       switch (change.type) {
          case "delta":
-            this.dateValue = this.dateValue.add(change.delta, change.unit);
+            this.dateValue = this.dateValue.add(change.delta, 'day');
             break;
          case "day":
             if (this.dateValue.day()===0) this.dateValue = this.dateValue.subtract(1, 'day');
             this.dateValue =  this.dateValue.day(change.day);
             break;
          case "month":
-            console.info("not implemented");
+            const fourWeeks = this.dateValue.add(4 * change.direction, "week");
+            const fiveWeeks = this.dateValue.add(5 * change.direction, "week");
+            const fourDiff = Math.abs(this.dateValue.date() - fourWeeks.date());
+            const fiveDiff = Math.abs(this.dateValue.date() - fiveWeeks.date());
+            this.dateValue = fourDiff < fiveDiff ? fourWeeks : fiveWeeks;
             break;
          case "commit":
             this.closeDatePicker();
             this.fireDateChangeEvent(this.dateValue, true);
+            return;
+         case "cancel":
+            // TODO: not actually cancelling. Need to record initial value.
+            this.closeDatePicker();
+            this.fireDateChangeEvent(this.dateValue, true);
+            return;
       }
 
-      console.log(this.dateValue.format('YYYY-MM-DD'));
+      // TODO:
+      // Is new date in the table?
+      //    If so:  scroll into view
 
+      const earliestDate = dayjs(tbody.firstElementChild.dataset['beginning']);
+      const weeksIn = this.dateValue.diff(earliestDate, 'week');
+      const weeksToAddAtEnd = weeksIn - (tbody.children.length/2);
+
+      if (weeksToAddAtEnd < 0) {
+         // console.log(`Adding ${-weeksToAddAtEnd} weeks at start`);
+         this.addWeeksAtStart(-weeksToAddAtEnd);
+         this.removeLastNWeeks(-weeksToAddAtEnd);
+      } else if (weeksToAddAtEnd > 0) {
+         // console.log(`Adding ${weeksToAddAtEnd} weeks at end`);
+         this.addWeeksAtEnd(weeksToAddAtEnd);
+         this.removeFirstNWeeks(weeksToAddAtEnd);
+      }
+
+      console.log(tbody.children.length,
+         earliestDate.format('YYYY-MM-DD'),
+         weeksToAddAtEnd,
+         tbody.firstElementChild.dataset['beginning']
+      );
+
+
+      //    If not: rebuild table around new date.
       this.highlightDate(tbody, this.dateValue, true);
       this.fireDateChangeEvent(this.dateValue, false);
-      event.preventDefault();
    }
 
    getSelectionWeek(tbody, date) {
