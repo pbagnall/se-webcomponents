@@ -1,0 +1,81 @@
+@media screen {
+   body {
+      font-family: Avenir, sans-serif;
+      margin: 8px;
+   }
+
+   nav ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 0.5rem;
+   }
+
+   nav ul li {
+      margin: 0;
+      background-color: #eeeeee;
+      border-radius: 40px;
+      padding: 0.2rem 0.75rem;
+   }
+
+   nav ul li a {
+      color: inherit;
+   }
+
+   nav ul li.selected {
+      background-color: #000000;
+      color: white;
+   }
+
+   h1 {
+      margin: 0.5rem 0 0.25rem 0;
+   }
+
+   section {
+      margin: 0;
+   }
+
+   details {
+      background-color: white;
+      border: 1px solid #bbbbbb;
+      padding: 0 0.5rem;
+      margin-bottom: 0.5rem;
+   }
+
+   summary {
+      margin: 0 -0.5rem 0 -0.5rem;
+      padding: 0 0.5rem;
+      font-size: 120%;
+      background-color: #eeeeee;
+   }
+
+   details[open] summary {
+      border-bottom: 1px solid #bbbbbb;
+      margin: 0 -0.5rem 0.5rem -0.5rem;
+   }
+
+   details ul {
+      margin: 0;
+      padding: 0 1.25rem;
+   }
+
+   details.li {
+      border: none;
+      background-color: transparent;
+      margin: 0;
+      padding: 0;
+   }
+
+   details.li summary {
+      margin: 0;
+      padding: 0;
+      border: none;
+      font-size: 100%;
+      background-color: transparent;
+   }
+
+   dl {
+      margin: 0;
+   }
+}

@@ -4,95 +4,8 @@
    <title>Date Picker demo</title>
    <script src="/lib/dayjs.js"></script>
    <script type='module' src='/components/datepicker.js'></script>
-   <style>
-      @media screen {
-         body {
-            font-family: Avenir, sans-serif;
-            margin: 8px;
-         }
-
-         se-popup {
-            --backgroundColor: #ffffaa;
-            --padding: 0.25rem;
-         }
-
-         se-datepicker.alternate {
-            --oddMonthBackground: #eaeaff;
-            --evenMonthBackground: #ffffff;
-            --toolbarBackground: #8888ff;
-            --foreground: #000000;
-            --hoverColor: #ffffff;
-            --hoverBackgroundColor: #0000ff80;
-            --selectedColor: #ffffff;
-            --selectedBackgroundColor: #0000ff;
-            --todayBorderColor: #80ccff;
-         }
-
-         button#trigger {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            background-color: grey;
-            color: white;
-            border: 2px solid black;
-            border-radius: 3px;
-         }
-
-         .topright { position: absolute; top: 8px; right: 8px; }
-         .bottomright { position: fixed; bottom: 8px; right: 8px; }
-
-         section {
-            margin: 0;
-         }
-
-         h1 {
-            margin: 0.5rem 0 0.25rem 0;
-         }
-
-         details {
-            background-color: white;
-            border: 1px solid #bbbbbb;
-            padding: 0 0.5rem;
-            margin-bottom: 0.5rem;
-         }
-
-         summary {
-            margin: 0 -0.5rem 0 -0.5rem;
-            padding: 0 0.5rem;
-            font-size: 120%;
-            background-color: #eeeeee;
-         }
-
-         details[open] summary {
-            border-bottom: 1px solid #bbbbbb;
-            margin: 0 -0.5rem 0.5rem -0.5rem;
-         }
-
-         details ul {
-            margin: 0;
-            padding: 0 1.25rem;
-         }
-
-         details.li {
-            border: none;
-            background-color: transparent;
-            margin: 0;
-            padding: 0;
-         }
-
-         details.li summary {
-            margin: 0;
-            padding: 0;
-            border: none;
-            font-size: 100%;
-            background-color: transparent;
-         }
-
-         dl {
-            margin: 0;
-         }
-      }
-   </style>
+   <link rel='stylesheet' href='/styles.css' />
+   <link rel='stylesheet' href='/demostyles.css' />
    <script type='text/javascript'>
       function dateChanged(event) {
          const output = document.getElementById('output');
@@ -117,9 +30,19 @@
    </script>
 </head>
 <body>
+   <h1>Date picker web component</h1>
+   <nav>
+      <ul>
+         <li class='selected'><a href='/'>Overview</a></li>
+         <li><a href='/docs.html'>Documentation</a></li>
+      </ul>
+   </nav>
+
    <section>
+      <p>
       <se-datepicker date='2023-5-12' onchange='dateChanged(event)'></se-datepicker>
       Selected date = <output id='output'>12-May-2023</output>
+      </p>
 
       <se-datepicker class='topright alternate' date='2023-5-12'></se-datepicker>
       <se-datepicker class='bottomright' date='2023-1-12'></se-datepicker>
@@ -130,47 +53,13 @@
       </se-popup>
    </section>
    <section>
-      <h1>Date picker web component</h1>
       <details open>
          <summary>Features</summary>
          <ul>
             <li>Multiple month display - time is a continuum!</li>
             <li>Infinitely Scrollable calendar</li>
-            <li>
-               <details class='li'>
-                  <summary>Styleable using CSS custom variables</summary>
-                  <dl>
-                     <dt><code>--oddMonthBackground</code></dt>
-                     <dd>background colour for odd months</dd>
-
-                     <dt><code>--evenMonthBackground</code></dt>
-                     <dd>background colour for even months</dd>
-
-                     <dt><code>--toolbarBackground</code></dt>
-                     <dd>
-                        background for the toolbar with the days of the week and up/down month/year buttons
-                     </dd>
-
-                     <dt><code>--foreground</code></dt>
-                     <dd>Colour of dates, days of week, and all other text</dd>
-
-                     <dt><code>--hoverColor</code></dt>
-                     <dd>Text colour of dates when being hovered over</dd>
-
-                     <dt><code>--hoverBackgroundColor</code></dt>
-                     <dd>Background colour of dates when being hovered over</dd>
-
-                     <dt><code>--selectedColor</code></dt>
-                     <dd>Text colour of selected date</dd>
-
-                     <dt><code>--selectedBackgroundColor</code></dt>
-                     <dd>Background colour of selected date</dd>
-
-                     <dt><code>--todayBorderColor</code></dt>
-                     <dd>Colour of border around today's date</dd>
-                  </dl>
-               </details>
-            </li>
+            <li>Styleable using CSS custom variables</li>
+            <li>Can be fully controlled by keyboard</li>
          </ul>
       </details>
       <details>
@@ -210,17 +99,25 @@
                Options:
                <ul>
                   <li>Exclude weekend (default: false), from usecase</li>
-                  <li>Weeks starts on Monday/Sunday (default: Monday), maybe from locale, maybe user prefs</li>
+                  <li>
+                     Weeks starts on Monday/Sunday (default: Monday), maybe from locale, maybe
+                     user prefs
+                  </li>
                   <li>Date format in input field (default: DD MMM YYYY), from locale</li>
                </ul>
             </li>
             <li>
-               CSS styles:
+               CSS styles: (as custom variables)
                <ul>
                   <li>Calendar Layout: D M Y or M D Y or Y M D (default: D M Y)</li>
                </ul>
             </li>
+            <li>
+               Accessible version should be designed to be ultra terse to give rapid equivalent
+               experience
+            </li>
          </ul>
+      </details>
    </section>
 </body>
 </html>
