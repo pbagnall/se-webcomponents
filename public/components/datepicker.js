@@ -1,4 +1,5 @@
 import '/components/popup.js';
+import { getShortcut } from '/lib/keyboard.js';
 
 const datePickerTemplate = document.createElement('template');
 datePickerTemplate.innerHTML = `
@@ -173,7 +174,7 @@ dialogTemplate.innerHTML = `
           margin: 0;
       }
    </style>
-   <se-popup anchor='date-picker' anchor-direction='se,sw,ne,nw'>
+   <se-popup anchor='date-picker' anchor-direction='se,sw,ne,nw,em,wm'>
       <div id='container'>
          <table>
             <thead>
@@ -280,16 +281,16 @@ class DatePicker extends HTMLElement {
       "ArrowRight":   { type: 'delta', delta: 1 },
 
       // this should jump by ~one month, preserving day of week, 4 or 5 weeks
-      "c-ArrowDown":  { type: "month", direction: 1 },
-      "c-ArrowUp":    { type: "month", direction: -1 },
+      "C-ArrowDown":  { type: "month", direction: 1 },
+      "C-ArrowUp":    { type: "month", direction: -1 },
 
       // this jumps by ~1 year, preserving day of the week. 52 weeks
       "PageUp":       { type: 'delta', delta: -364 },
       "PageDown":     { type: 'delta', delta: 364 },
 
       // move to start or end of week
-      "c-ArrowLeft":  { type: "day", day: 1 },
-      "c-ArrowRight": { type: "day", day: 7 },
+      "C-ArrowLeft":  { type: "day", day: 1 },
+      "C-ArrowRight": { type: "day", day: 7 },
       "Home":         { type: "day", day: 1 },
       "End":          { type: "day", day: 7 },
 
