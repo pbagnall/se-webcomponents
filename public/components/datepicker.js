@@ -245,7 +245,7 @@ class DatePicker extends HTMLElement {
    }
 
    openDatePicker() {
-      const jumpScroll = (e) => this.jumpScroll(e);
+      const quickButtons = (e) => this.quickButtons(e);
 
       this.shadowRoot.appendChild(dialogTemplate.content.cloneNode(true));
       this.popupIsOpen = true;
@@ -261,10 +261,10 @@ class DatePicker extends HTMLElement {
       const upYear = this.shadowRoot.getElementById('backyear');
       const downMonth = this.shadowRoot.getElementById('forwardmonth');
       const downYear = this.shadowRoot.getElementById('forwardyear');
-      upMonth.addEventListener("click", jumpScroll);
-      upYear.addEventListener("click", jumpScroll);
-      downMonth.addEventListener("click", jumpScroll);
-      downYear.addEventListener("click", jumpScroll);
+      upMonth.addEventListener("click", quickButtons);
+      upYear.addEventListener("click", quickButtons);
+      downMonth.addEventListener("click", quickButtons);
+      downYear.addEventListener("click", quickButtons);
 
       this.populateCalendar();
       this.popup.addEventListener("open", this.popupOpened);
@@ -302,25 +302,27 @@ class DatePicker extends HTMLElement {
 
    keyboard(event) {
       event.preventDefault();
+      const command = this.keyboardCommands[getShortcut(event)];
+      if (typeof command === 'undefined') return;
 
+      this.action(command);
+   }
+   
+   action(command) {
       const tbody = this.dialog.querySelector("tbody");
-      const key = event.ctrlKey ? "c-" + event.key : event.key;
-
-      const change = this.keyboardCommands[key];
-      if (typeof change === 'undefined') return;
-
       this.highlightDate(tbody, this.dateValue, false);
-      switch (change.type) {
+
+      switch (command.type) {
          case "delta":
-            this.dateValue = this.dateValue.add(change.delta, 'day');
+            this.dateValue = this.dateValue.add(command.delta, 'day');
             break;
          case "day":
             if (this.dateValue.day()===0) this.dateValue = this.dateValue.subtract(1, 'day');
-            this.dateValue =  this.dateValue.day(change.day);
+            this.dateValue =  this.dateValue.day(command.day);
             break;
          case "month":
-            const fourWeeks = this.dateValue.add(4 * change.direction, "week");
-            const fiveWeeks = this.dateValue.add(5 * change.direction, "week");
+            const fourWeeks = this.dateValue.add(4 * command.direction, "week");
+            const fiveWeeks = this.dateValue.add(5 * command.direction, "week");
             const fourDiff = Math.abs(this.dateValue.date() - fourWeeks.date());
             const fiveDiff = Math.abs(this.dateValue.date() - fiveWeeks.date());
             this.dateValue = fourDiff < fiveDiff ? fourWeeks : fiveWeeks;
@@ -336,32 +338,21 @@ class DatePicker extends HTMLElement {
             return;
       }
 
-      // TODO:
-      // Is new date in the table?
-      //    If so:  scroll into view
-
       const earliestDate = dayjs(tbody.firstElementChild.dataset['beginning']);
       const weeksIn = this.dateValue.diff(earliestDate, 'week');
       const weeksToAddAtEnd = weeksIn - (tbody.children.length/2);
 
       if (weeksToAddAtEnd < 0) {
-         // console.log(`Adding ${-weeksToAddAtEnd} weeks at start`);
          this.addWeeksAtStart(-weeksToAddAtEnd);
          this.removeLastNWeeks(-weeksToAddAtEnd);
       } else if (weeksToAddAtEnd > 0) {
-         // console.log(`Adding ${weeksToAddAtEnd} weeks at end`);
          this.addWeeksAtEnd(weeksToAddAtEnd);
          this.removeFirstNWeeks(weeksToAddAtEnd);
       }
 
-      console.log(tbody.children.length,
-         earliestDate.format('YYYY-MM-DD'),
-         weeksToAddAtEnd,
-         tbody.firstElementChild.dataset['beginning']
-      );
+      // TODO: make this preserve the position of the selection in the dialog
+      this.scrollToDate(this.dateValue);
 
-
-      //    If not: rebuild table around new date.
       this.highlightDate(tbody, this.dateValue, true);
       this.fireDateChangeEvent(this.dateValue, false);
    }
@@ -385,20 +376,20 @@ class DatePicker extends HTMLElement {
       }
    }
 
-   jumpScroll(event) {
-      console.log("jumping " + event.target.id);
+   buttonCommands = {
+      // this should jump by ~one month, preserving day of week, 4 or 5 weeks
+      "forwardmonth": { type: "month", direction: 1 },
+      "backmonth":    { type: "month", direction: -1 },
 
-      // get the currently displayed date (not the same as the current selection)
-      //    i.e. which week is closest to the middle of the datepicker
-      //    unless a date is already focussed (either by keyboard or mouseover)
+      // this jumps by ~1 year, preserving day of the week. 52 weeks
+      "backyear":     { type: 'delta', delta: -364 },
+      "forwardyear":  { type: 'delta', delta: 364 },
+   }
 
-      // adjust by some amount, forwards/back one month/year
-
-      // work out what date range should be in the HTML
-      //   if there's overlap with the current HTML then add/remove rows to the start/end as appropriate
-      //   otherwise wipe the calendar and rebuild around that date
-
-      // scroll to that date
+   quickButtons(event) {
+      let command = this.buttonCommands[event.target.id];
+      if (!command) return;
+      this.action(command);
    }
 
    addPeriodMarker(period, parent, row, startDate) {
@@ -465,14 +456,17 @@ class DatePicker extends HTMLElement {
       const tbody = this.dialog.querySelector("tbody");
       let first = tbody.firstElementChild;
       let startDate = dayjs(first.dataset['beginning']).subtract(7, 'day');
+      let scrollBy = 0;
 
       for (let i=0; i<weeks; i++) {
          const row = this.buildWeek(tbody, startDate);
          tbody.insertBefore(row, first);
-         this.dialog.scrollTop += first.getBoundingClientRect().height;
          first = row;
          startDate = startDate.subtract(7, 'day');
+         scrollBy += first.getBoundingClientRect().height;
       }
+
+      this.dialog.scrollBy(0, scrollBy);
    }
 
    addWeeksAtEnd(weeks, startDate) {
@@ -491,6 +485,7 @@ class DatePicker extends HTMLElement {
 
    removeFirstNWeeks(number) {
       const parent = this.dialog.querySelector("tbody");
+      let scrollBy = 0;
 
       for (let i=0; i<number; i++) {
          const row = parent.firstElementChild;
@@ -519,8 +514,10 @@ class DatePicker extends HTMLElement {
 
          const height = row.firstElementChild.getBoundingClientRect().height;
          parent.removeChild(row);
-         this.dialog.scrollTop -= height;
+         scrollBy -= height;
       }
+
+      this.dialog.scrollBy(0, scrollBy);
    }
 
    removeLastNWeeks(number) {

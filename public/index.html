@@ -53,7 +53,7 @@
       </se-popup>
    </section>
    <section>
-      <details open>
+      <details>
          <summary>Features</summary>
          <ul>
             <li>Multiple month display - time is a continuum!</li>
@@ -62,24 +62,33 @@
             <li>Can be fully controlled by keyboard</li>
          </ul>
       </details>
-      <details>
+      <details open>
          <summary>To Do</summary>
          <ul>
-            <li>Implement keyboard interaction</li>
-            <ul>
-               <li>Ctrl-Up = previous month - work out algo</li>
-               <li>Ctrl-Down = next month - work out algo</li>
-               <li>PageUp = previous year</li>
-               <li>PageDown = next year</li>
-            </ul>
+            <li>
+               Fix focus issues. When you click on background or a button, keyboard focus is lost
+            </li>
+            <li>
+               When you go down a month (either by keyboard or quick button) it should preserve the scroll offset
+               of the current selection, assuming it's in view. If not it should jump it into view, rather than
+               having the selection center itself.
+            </li>
+            <li>
+               Look at performance of jumping a year - at the moment it can't keep up with keyboard auto-repeat, which
+               is a bit of a nuisance (causing overshoots when you keep pageup/down held down). This might be as simple
+               as reducing the number rows maintained.
+            </li>
             <li>
                Fix popup bug, where it's appearing in "em" position, even though it's
                too close to the bottom.
             </li>
-            <li>Implement month/year up/down buttons</li>
             <li>Implement date parsing for typed input</li>
             <li>Implement canned dates options</li>
             <li>Add a decent icon for the input field</li>
+            <li>Add decent icons for month/year up/down buttons</li>
+            <li>
+               Make the number of rows in the table dynamic, and relate to the size of the dialog, rather than just a fixed number
+            </li>
          </ul>
       </details>
 
