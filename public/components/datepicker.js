@@ -222,11 +222,8 @@ class DatePicker extends HTMLElement {
       this.popupOpened = () => this.popupOpenedHandler();
       this.popupClosed = () => this.popupClosedHandler();
       this.keyboardHandler = (e) => this.keyboard(e);
+      this.dateValue = this.getDateAttribute();
 
-      this.dateValue = dayjs(this.attributes['date'].value);
-      if (isNaN(this.dateValue.valueOf())) {
-         this.dateValue = dayjs();
-      }
       this.input.value = this.dateValue.format("DD MMM YYYY");
 
       this.trigger.addEventListener('click', () => this.triggerClicked());
@@ -235,6 +232,18 @@ class DatePicker extends HTMLElement {
       if (this.hasAttribute('open')) {
          this.openDatePicker();
       }
+   }
+
+   getDateAttribute() {
+      if (!this.attributes['date']) return dayjs();
+      if (this.attributes['date'].value === 'today') return dayjs();
+
+      const dateValue = dayjs(this.attributes['date'].value);
+      if (isNaN(dateValue.valueOf())) {
+         return dayjs();
+      }
+
+      return dateValue;
    }
 
    triggerClicked() {
