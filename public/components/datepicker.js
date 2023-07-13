@@ -1,7 +1,40 @@
 import '/components/popup.js';
 import { getShortcut } from '/lib/keyboard.js';
+import { getDataUrl } from '/lib/dataUrls.js';
 
 const datePickerTemplate = document.createElement('template');
+
+function makeSVG(width, height, svgContent) {
+   return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>`+
+          `<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">`+
+          `<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" version="1.1" xmlns="http://www.w3.org/2000/svg">`+
+          `${svgContent}`+
+          `</svg>`;
+}
+
+const svgs = {
+   calendar: makeSVG(32, 32, `
+      <rect x="5" y="0" width="8" height="7" rx="2"/>
+      <rect x="19" y="0" width="8" height="7" rx="2"/>
+      <rect x="0" y="5" width="32" height="27" rx="4"/>
+      <rect x="3" y="8" width="26" height="21" rx="1" fill='white'/>
+      <path d="M13.073,24.949L10.604,24.949L10.604,15.641C9.701,16.485 8.638,17.109 7.413,17.513L7.413,15.272C8.058,15.061 8.758,14.661 9.514,14.072C10.27,13.484 10.788,12.797 11.069,12.011L13.073,12.011L13.073,24.949Z"/>
+      <path d="M25.105,22.655L25.105,24.949L16.448,24.949C16.542,24.082 16.823,23.26 17.292,22.484C17.761,21.707 18.687,20.677 20.069,19.394C21.183,18.357 21.865,17.654 22.117,17.285C22.457,16.775 22.627,16.271 22.627,15.773C22.627,15.222 22.479,14.799 22.183,14.503C21.887,14.207 21.479,14.059 20.957,14.059C20.441,14.059 20.031,14.214 19.727,14.525C19.422,14.836 19.246,15.351 19.199,16.072L16.738,15.826C16.885,14.466 17.345,13.491 18.118,12.899C18.892,12.307 19.858,12.011 21.019,12.011C22.29,12.011 23.289,12.354 24.016,13.04C24.742,13.725 25.105,14.578 25.105,15.597C25.105,16.177 25.001,16.73 24.793,17.254C24.585,17.778 24.256,18.328 23.805,18.902C23.506,19.283 22.967,19.831 22.187,20.546C21.408,21.26 20.915,21.735 20.707,21.969C20.499,22.204 20.33,22.432 20.201,22.655L25.105,22.655Z"/>
+   `),
+   up: makeSVG(16, 16, '<path d="M8,3.2L14,12.8L2,12.8L8,3.2Z"/>'),
+   down: makeSVG(16, 16, '<path d="M8,12.8 L14,3.2 L2,3.2 L8,12.8Z"/>'),
+   upFast: makeSVG(16, 16, '<path d="M8,-0L14,9.6L2,9.6L8,-0Z"/><path d="M8,6.4L14,16L2,16L8,6.4Z"/>\n'),
+   downFast: makeSVG(16, 16, '<path d="M8,16L2,6.4L14,6.4L8,16Z"/><path d="M8,9.6L2,0L14,0L8,9.6Z"/>\n')
+};
+
+const icons = {
+   calendar: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.calendar),
+   up: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.up),
+   upFast: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.upFast),
+   down: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.down),
+   downFast: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.downFast)
+}
+
 datePickerTemplate.innerHTML = `
     <style>
         div.datepicker {
@@ -30,7 +63,8 @@ datePickerTemplate.innerHTML = `
 
         div.datepicker:has(input.field:focus),
         div.datepicker:has(button.trigger:focus) {
-            outline: Highlight auto 2px ;
+            outline: Highlight auto 2px;
+            /*noinspection CssOverwrittenProperties*/
             outline: -webkit-focus-ring-color auto 2px;
         }
 
@@ -42,13 +76,18 @@ datePickerTemplate.innerHTML = `
             margin: 0;
             height: 1.375rem;
             vertical-align: bottom;
+            background-image: url(${icons.calendar});
+            background-repeat: no-repeat;
+            background-size: 16px;
+            background-position: center center;
+            width: 24px;
         }
         
         div.datepicker:hover button.trigger        { background-color: #cccccc; }
         div.datepicker       button.trigger:active { background-color: #aaaaaa; }
     </style>
     <div class='datepicker' id='date-picker'>
-    <input class='field' type='text' value='no selection' /><button tabindex=0 class='trigger'>C</button>
+    <input class='field' type='text' value='no selection' /><button tabindex=0 class='trigger'></button>
     </div>
 `;
 
@@ -66,7 +105,6 @@ dialogTemplate.innerHTML = `
           --datepicker-selectedBackgroundColor: var(--selectedBackgroundColor, #ff0000);
           --datepicker-todayBorderColor: var(--todayBorderColor, orange);
 
-          top: 2rem;
           height: 16rem;
           color: var(--datepicker-foreground);
           overflow: auto;
@@ -99,24 +137,32 @@ dialogTemplate.innerHTML = `
       se-popup thead,
       se-popup tfoot {
          position: sticky;
-         top: 0;
          background-color: var(--datepicker-toolbarBackground);
          padding: 0;
          margin: 0;
          z-index: 1;
       }
       
+      se-popup thead { top: 0; }
+      se-popup tfoot { bottom: 0; }
+
       se-popup thead button,
       se-popup tfoot button {
-        height: 1.1rem;
-        font-family: Avenir, sans-serif;
-        font-size: 0.8rem;
+        height: 1.5rem;
+        width: 1.5rem;
+        border: none;
+        border-radius: 20%;
+        background-color: #eeeeee;
+        background-repeat: no-repeat;
+        background-size: 1.1rem;
+        background-position: center center;
       }
       
-      se-popup tfoot {
-         bottom: 0;      
-      }
-
+      se-popup thead button#backmonth    { background-image: url(${icons.up }); }
+      se-popup thead button#backyear     { background-image: url(${icons.upFast }); }
+      se-popup tfoot button#forwardmonth { background-image: url(${icons.down }); }
+      se-popup tfoot button#forwardyear  { background-image: url(${icons.downFast }); }
+      
       se-popup th.month, 
       se-popup th.year {
          vertical-align: top;
@@ -186,8 +232,8 @@ dialogTemplate.innerHTML = `
                   <th scope='col'>Fri</th>
                   <th scope='col'>Sat</th>
                   <th scope='col'>Sun</th>
-                  <td><button id='backmonth' data-direction="back" data-unit="month">^</button></td>
-                  <td><button id='backyear' data-direction="back" data-unit="year">^</button></td>
+                  <td><button id='backmonth' data-direction="back" data-unit="month" title='Back a month (Ctrl-Up)'></button></td>
+                  <td><button id='backyear' data-direction="back" data-unit="year" title='Back a year (PageUp)'></button></td>
                </tr>
             </thead>
             <tfoot>
@@ -199,8 +245,8 @@ dialogTemplate.innerHTML = `
                   <th></th>
                   <th></th>
                   <th></th>
-                  <td><button id='forwardmonth' data-direction="forward" data-unit="month">v</button></td>
-                  <td><button id='forwardyear' data-direction="forward" data-unit="year">v</button></td>
+                  <td><button id='forwardmonth' data-direction="forward" data-unit="month" title='Forwards a month (Ctrl-Down)'></button></td>
+                  <td><button id='forwardyear' data-direction="forward" data-unit="year" title='Forwards a year (PageDown)'></button></td>
                </tr>
             </tfoot>
             <tbody>

@@ -17,7 +17,7 @@
    }
 
    button#trigger {
-      position: absolute;
+      position: fixed;
       bottom: 8px;
       left: 8px;
       background-color: grey;
