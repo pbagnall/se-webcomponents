@@ -113,6 +113,7 @@ class PopUp extends HTMLElement {
          case "sw":
             position.y = anchorRect.bottom;
             position.fits = position.y + popupRect.height <= windowHeight;
+            position.overY = windowHeight - position.y - popupRect.height;
             break;
 
          case "ne":
@@ -120,6 +121,7 @@ class PopUp extends HTMLElement {
          case "nw":
             position.y = anchorRect.top - popupRect.height;
             position.fits = position.y >= 0;
+            position.overY = -position.y;
             break;
 
          case "en":
@@ -127,6 +129,7 @@ class PopUp extends HTMLElement {
          case "es":
             position.x = anchorRect.right;
             position.fits = position.x + popupRect.width <= windowWidth;
+            position.overX = windowWidth - position.x - popupRect.width;
             break;
 
          case "wn":
@@ -134,6 +137,7 @@ class PopUp extends HTMLElement {
          case "ws":
             position.x = anchorRect.left - popupRect.width;
             position.fits = position.x >= 0;
+            position.overX = -position.x;
             break;
       }
 
