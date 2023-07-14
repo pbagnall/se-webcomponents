@@ -37,9 +37,6 @@ class PopUp extends HTMLElement {
       this.attachShadow({ mode: 'open' });
       this.shadowRoot.append(popupTemplate.content.cloneNode(true));
       this.popup = this.shadowRoot.querySelector('div#popup');
-      this.anchorId = this.attributes['anchor'].value;
-      this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
-
       this.clickedOutside = (event) => {
          if (event.composedPath()[0].closest("se-popup") !== this) {
             this.close(event);
@@ -69,6 +66,9 @@ class PopUp extends HTMLElement {
    }
 
    open() {
+      this.anchorId = this.attributes['anchor'].value;
+      this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
+
       if (currentPopup === this) return;
       if (currentPopup !== null) currentPopup.close();
       currentPopup = this;

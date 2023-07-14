@@ -3,10 +3,19 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "server": "http-server"
+    "server": "http-server",
+    "demo": "npm run buildsite; http-server -o",
+    "buildsite": "node_modules/.bin/rollup -c",
+    "build": "npm run buildsite",
+    "dev": "node_modules/.bin/rollup -c -w",
+  },
+  "dependencies": {
+    "dayjs": "^1.11.7"
   },
   "devDependencies": {
-    "dayjs": "^1.11.7",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "rollup": "^3.26.2",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "^0.4.3"
   }
 }

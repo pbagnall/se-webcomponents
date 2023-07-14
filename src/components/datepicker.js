@@ -1,6 +1,7 @@
-import '/components/popup.js';
-import { getShortcut } from '/lib/keyboard.js';
-import { getDataUrl } from '/lib/dataUrls.js';
+import './popup.js';
+import { getShortcut } from '../lib/keyboard.js';
+import { getDataUrl } from '../lib/dataUrls.js';
+import dayjs from "dayjs/esm/index";
 
 const datePickerTemplate = document.createElement('template');
 
