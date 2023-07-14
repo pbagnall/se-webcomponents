@@ -7,7 +7,7 @@
     "demo": "npm run buildsite; http-server -o",
     "buildsite": "node_modules/.bin/rollup -c",
     "build": "npm run buildsite",
-    "dev": "node_modules/.bin/rollup -c -w",
+    "dev": "node_modules/.bin/rollup -c -w"
   },
   "dependencies": {
     "dayjs": "^1.11.7"
