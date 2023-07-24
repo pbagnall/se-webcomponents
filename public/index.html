@@ -52,83 +52,13 @@
       </se-popup>
    </section>
    <section>
-      <details>
+      <details open>
          <summary>Features</summary>
          <ul>
             <li>Multiple month display - time is a continuum!</li>
             <li>Infinitely Scrollable calendar</li>
             <li>Styleable using CSS custom variables</li>
             <li>Can be fully controlled by keyboard</li>
-         </ul>
-      </details>
-      <details open>
-         <summary>To Do</summary>
-         <ul>
-            <li>Implement date parsing for typed input</li>
-            <li>Implement canned dates options</li>
-            <li>
-               Fix focus issues. When you click on background or a button, keyboard focus is lost
-            </li>
-            <li>
-               Accessible version should be designed to be ultra terse to give rapid equivalent
-               experience
-            </li>
-            <li>
-               When you go down a month (either by keyboard or quick button) it should preserve the scroll offset
-               of the current selection, assuming it's in view. If not it should jump it into view, rather than
-               having the selection center itself.
-            </li>
-            <li>
-               Make the number of rows in the table dynamic, and relate to the size of the dialog, rather than just a fixed number
-            </li>
-            <li>
-               Look at performance of jumping a year - at the moment it can't keep up with keyboard auto-repeat, which
-               is a bit of a nuisance (causing overshoots when you keep pageup/down held down). This might be as simple
-               as reducing the number rows maintained.
-            </li>
-            <li>
-               Fix popup bug, where it's appearing in "em" position, even though it's
-               too close to the bottom.
-            </li>
-         </ul>
-      </details>
-
-      <details>
-         <summary>Future ideas</summary>
-         <ul>
-            <li>Add API for adding "busy" indicators to calendar</li>
-            <li>
-               If today and selected date are close together, then when the picker opens
-               it should scroll so both are visible
-            </li>
-            <li>
-               Extend into DateRangePicker - can register for both se-datepicker and
-               se-datarangepicker
-            </li>
-            <li>
-               Options:
-               <ul>
-                  <li>Exclude weekend (default: false), from usecase</li>
-                  <li>
-                     Weeks starts on Monday/Sunday (default: Monday), maybe from locale, maybe
-                     user prefs
-                  </li>
-                  <li>Date format in input field (default: DD MMM YYYY), from locale</li>
-               </ul>
-            </li>
-            <li>
-               CSS styles: (as custom variables)
-               <ul>
-                  <li>Calendar Layout: D M Y or M D Y or Y M D (default: D M Y)</li>
-               </ul>
-            </li>
-            <li>
-               Try using adoptedStyleSheets in shadowRoot for attaching stylesheets.
-               <ul>
-                  <li><a href='https://caniuse.com/mdn-api_shadowroot_adoptedstylesheets'>Can I Use</a></li>
-                  <li><a href='https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot/adoptedStyleSheets'>MDN reference</a></li>
-               </ul>
-            </li>
          </ul>
       </details>
    </section>
