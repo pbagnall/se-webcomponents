@@ -1,9 +1,9 @@
 import './popup.js';
+import './selection.js';
 import { getShortcut } from '../lib/keyboard.js';
 import { getDataUrl } from '../lib/dataUrls.js';
 import dayjs from "dayjs/esm/index";
-
-const datePickerTemplate = document.createElement('template');
+import { extractDate } from "../lib/dateRecogniser.js";
 
 function makeSVG(width, height, svgContent) {
    return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>`+
@@ -36,6 +36,7 @@ const icons = {
    downFast: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.downFast)
 }
 
+const datePickerTemplate = document.createElement('template');
 datePickerTemplate.innerHTML = `
     <style>
         div.datepicker {
@@ -173,7 +174,7 @@ dialogTemplate.innerHTML = `
       se-popup th.month span,
       se-popup th.year span {
          position: sticky;
-         top: 1.5rem;
+         top: 2rem;
          writing-mode: vertical-lr;
          text-orientation: sideways;
          padding: 3px;
@@ -246,14 +247,38 @@ dialogTemplate.innerHTML = `
                   <th></th>
                   <th></th>
                   <th></th>
-                  <td><button id='forwardmonth' data-direction="forward" data-unit="month" title='Forwards a month (Ctrl-Down)'></button></td>
-                  <td><button id='forwardyear' data-direction="forward" data-unit="year" title='Forwards a year (PageDown)'></button></td>
+                  <td><button id='forwardmonth' data-direction="forward"
+                              data-unit="month" title='Forwards a month (Ctrl-Down)'></button></td>
+                  <td><button id='forwardyear' data-direction="forward"
+                              data-unit="year" title='Forwards a year (PageDown)'></button></td>
                </tr>
             </tfoot>
             <tbody>
             </tbody>
-      </table>
+         </table>
       </div>
+   </se-popup>
+`;
+
+const interpretationTemplate = document.createElement('template');
+interpretationTemplate.innerHTML = `
+   <style id='interpretStyle'>
+      se-popup#interpret {
+         font-size: 0.8em;
+         font-family: Avenir, sans-serif;
+         width: max-content;
+         height: max-content;
+         --padding: 0;
+         --borderWidth: 1px;
+      }
+      
+      se-popup#interpret se-selection {
+         --border-style: none;
+      }
+   </style>
+   <se-popup id='interpret' anchor='date-picker' anchor-direction='se,sw,ne,nw,wm,em'>
+      <se-selection>
+      </se-selection>
    </se-popup>
 `;
 
@@ -274,10 +299,74 @@ class DatePicker extends HTMLElement {
       this.input.value = this.dateValue.format("DD MMM YYYY");
 
       this.trigger.addEventListener('click', () => this.triggerClicked());
+      const focus = (event) => this.inputFocussed(event);
+      this.input.addEventListener('focus', focus);
+      this.input.addEventListener('input', () => this.typing());
+      this.input.addEventListener('change', () => this.commitTyping());
       this.popupIsOpen = false;
 
       if (this.hasAttribute('open')) {
          this.openDatePicker();
+      }
+   }
+
+   inputFocussed(event) {
+      if (event.type === 'click') {
+         event.preventDefault();
+         event.stopPropagation();
+      }
+      this.input.focus();
+      this.input.setSelectionRange(0, this.input.value.length);
+   }
+
+   typing() {
+      const dates = extractDate(this.input.value);
+      if (dates.length>0) {
+         this.openInterpretation(dates);
+      }
+
+      this.addDateToInterpretation(dates);
+   }
+
+   openInterpretation(dates) {
+      if (!this.interpretationIsOpen) {
+         this.shadowRoot.appendChild(interpretationTemplate.content.cloneNode(true));
+         this.interpretationIsOpen = true;
+         this.interpretation = this.shadowRoot.querySelector("se-popup#interpret");
+         this.interpretationList = this.shadowRoot.querySelector('se-selection')
+      }
+      this.interpretation.open();
+   }
+
+   closeInterpretation(fireEvent) {
+      this.shadowRoot.removeChild(this.interpretation);
+      this.shadowRoot.removeChild(this.shadowRoot.querySelector('#interpretStyle'));
+      this.interpretationIsOpen = false;
+      if (fireEvent) this.fireDateChangeEvent(this.dateValue, true);
+   }
+
+   addDateToInterpretation(dates) {
+      if (dates.length === 0) {
+         this.closeInterpretation(false);
+         return;
+      }
+
+      let html = '';
+      for (const date of dates) {
+         const humanDate = dayjs(date).format("DD MMMM YYYY");
+         const isoDate = dayjs(date).format("YYYY-MM-DD");
+         html+=`<option value='${dayjs(date).format("YYYY-MM-DD")}'>${humanDate}</option>`;
+      }
+
+      this.interpretationList.innerHTML = html;
+   }
+
+   commitTyping() {
+      const dates = extractDate(this.input.value);
+      if (dates.length>0) {
+         this.dateValue = dayjs(dates[0]);
+         this.input.value = this.dateValue.format("DD MMM YYYY");
+         this.closeInterpretation(true);
       }
    }
 
