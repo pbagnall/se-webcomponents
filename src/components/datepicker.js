@@ -328,7 +328,7 @@ class DatePicker extends HTMLElement {
       this.addDateToInterpretation(dates);
    }
 
-   openInterpretation(dates) {
+   openInterpretation() {
       if (!this.interpretationIsOpen) {
          this.shadowRoot.appendChild(interpretationTemplate.content.cloneNode(true));
          this.interpretationIsOpen = true;
@@ -355,7 +355,7 @@ class DatePicker extends HTMLElement {
       for (const date of dates) {
          const humanDate = dayjs(date).format("DD MMMM YYYY");
          const isoDate = dayjs(date).format("YYYY-MM-DD");
-         html+=`<option value='${dayjs(date).format("YYYY-MM-DD")}'>${humanDate}</option>`;
+         html+=`<option value='${isoDate}'>${humanDate}</option>`;
       }
 
       this.interpretationList.innerHTML = html;
