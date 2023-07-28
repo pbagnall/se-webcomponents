@@ -161,7 +161,7 @@ export function extractDate(str) {
         }
 
         if (!yearUsed) year = (new Date()).getFullYear();
-        if (!monthUsed) month = (new Date()).getMonth();
+        if (!monthUsed) month = (new Date()).getMonth()+1;
 
         if (patternTokenPtr === pattern.sequence.length) {
             const result = `${year}-${twoDigitPad(month)}-${twoDigitPad(date)}`;
