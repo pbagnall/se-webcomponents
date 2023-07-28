@@ -131,12 +131,16 @@ export function extractDate(str) {
 
     let output = [];
     for (const pattern of patterns) {
-        let tokenListPtr = 0;
-        let patternTokenPtr = 0;
-        let date, month, year;
+        const today = new Date();
+        let date = today.getDate();
+        let month= today.getMonth()+1;
+        let year= today.getFullYear();
         let dateUsed = false
         let monthUsed = false;
         let yearUsed = false;
+
+        let tokenListPtr = 0;
+        let patternTokenPtr = 0;
 
         while (tokenListPtr < tokenList.length && patternTokenPtr < pattern.sequence.length) {
             let found = false;
@@ -159,9 +163,6 @@ export function extractDate(str) {
                 patternTokenPtr = 0;
             }
         }
-
-        if (!yearUsed) year = (new Date()).getFullYear();
-        if (!monthUsed) month = (new Date()).getMonth()+1;
 
         if (patternTokenPtr === pattern.sequence.length) {
             const result = `${year}-${twoDigitPad(month)}-${twoDigitPad(date)}`;
