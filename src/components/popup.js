@@ -5,7 +5,7 @@ popupTemplate.innerHTML = `
          --popup-borderWidth: var(--borderWidth, 1px);
          --popup-borderStyle: var(--borderStyle, solid);
          --popup-backgroundColor: var(--backgroundColor, white);
-         --popup-padding: var(--padding, 0.25rem);
+         --popup-padding: var(--padding, 0.5rem);
       
          border-width: var(--popup-borderWidth);      
          border-style: var(--popup-borderStyle);
@@ -87,6 +87,10 @@ class PopUp extends HTMLElement {
       for (let direction of this.anchorDirection) {
          position = this.calcPosition(direction, anchorRect, popupRect, window.innerWidth, window.innerHeight);
          if (position.fits) break;
+      }
+
+      if (!position.fits) {
+         position = this.calcPosition(this.anchorDirection[0], anchorRect, popupRect, window.innerWidth, window.innerHeight);
       }
 
       let refRect = this.getReferenceElement().getBoundingClientRect();
