@@ -4,6 +4,7 @@ import { getShortcut } from '../lib/keyboard.js';
 import { getDataUrl } from '../lib/dataUrls.js';
 import dayjs from "dayjs/esm/index";
 import { extractDate } from "../lib/dateRecogniser.js";
+import { setupInput as si, updateValue as uv } from '../lib/inputElement.js';
 
 function makeSVG(width, height, svgContent) {
    return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>`+
@@ -283,6 +284,9 @@ interpretationTemplate.innerHTML = `
 `;
 
 class DatePicker extends HTMLElement {
+   setupInput = si;
+   updateValue = uv;
+
    constructor() {
       super();
       this.attachShadow({mode: 'open'});
@@ -294,9 +298,6 @@ class DatePicker extends HTMLElement {
       this.popupOpened = () => this.popupOpenedHandler();
       this.popupClosed = () => this.popupClosedHandler();
       this.keyboardHandler = (e) => this.keyboard(e);
-      this.dateValue = this.getDateAttribute();
-
-      this.input.value = this.dateValue.format("DD MMM YYYY");
 
       this.trigger.addEventListener('click', () => this.triggerClicked());
       const focus = (event) => this.inputFocussed(event);
@@ -304,10 +305,15 @@ class DatePicker extends HTMLElement {
       this.input.addEventListener('input', () => this.typing());
       this.input.addEventListener('change', () => this.commitTyping());
       this.popupIsOpen = false;
+   }
 
-      if (this.hasAttribute('open')) {
-         this.openDatePicker();
-      }
+   connectedCallback() {
+      this.dateValue = this.getDateAttribute();
+      this.input.value = this.dateValue.format("DD MMM YYYY");
+
+      if (this.hasAttribute('open')) this.openDatePicker();
+      this.setupInput();
+      this.updateValue(this.dateValue.format("YYYY-MM-DD"));
    }
 
    inputFocussed(event) {
@@ -371,8 +377,8 @@ class DatePicker extends HTMLElement {
    }
 
    getDateAttribute() {
-      if (!this.attributes['date']) return dayjs();
-      if (this.attributes['date'].value === 'today') return dayjs();
+      if (!this.getAttribute('date') === '') return dayjs();
+      if (this.getAttribute('date') === 'today') return dayjs();
 
       const dateValue = dayjs(this.attributes['date'].value);
       if (isNaN(dateValue.valueOf())) {
@@ -779,6 +785,7 @@ class DatePicker extends HTMLElement {
       const dateChangedEvent = new Event("change");
       dateChangedEvent.final = final;
       dateChangedEvent.value = this.dateValue.format('YYYY-MM-DD');
+      this.updateValue(dateChangedEvent.value);
       this.dispatchEvent(dateChangedEvent);
    }
 }
