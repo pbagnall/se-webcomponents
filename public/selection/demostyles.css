@@ -1,0 +1,9 @@
+se-selection.alternate {
+    --gap: 1rem;
+    --background-color: pink;
+    --padding: 0.5rem;
+    --item-background-color-selected: red;
+    --item-background-color: purple;
+    --item-color: white;
+    font-family: Courier, monospace;
+}

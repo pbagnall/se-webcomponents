@@ -1,0 +1,16 @@
+@media screen {
+   h2.popup {
+      margin-top: 0;
+   }
+
+   se-popup.alternate {
+      --backgroundColor: #ffffaa;
+      --padding: 3rem;
+      --borderWidth: 4px;
+      --borderStyle: dashed;
+   }
+
+   main div {
+      justify-content: space-between;
+   }
+}

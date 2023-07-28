@@ -1,11 +1,68 @@
 @media screen {
    body {
       font-family: Avenir, sans-serif;
-      margin: 8px;
+      margin: 0;
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      grid-template-rows: min-content 1fr;
+      grid-template-areas:
+              "header header"
+              "list content";
+      height: 100vh;
+   }
+
+   header {
+      grid-area: header;
+      color: #d8d8d8;
+      background: rgb(44, 39, 125);
+      background: linear-gradient(145deg, #2c277d 0%, #090979 34%, #88077c 80%);
+   }
+
+   header h1 {
+      margin: 0 0.5rem 0 0.5rem;
+      font-weight: 500;
+   }
+
+   h2 {
+      margin: 1rem 0;
+   }
+
+   main {
+      position: relative;
+      padding: 1rem;
+      overflow: auto;
+   }
+
+   main ul.subnav {
+      display: flex;
+      gap: 2rem;
+      margin: 0;
+      margin-bottom: 1rem;
+      width: calc(100% - 1rem);
+      color: white;
+      background: rgb(44, 39, 125);
+      background: linear-gradient(325deg, #090979 24%, #88077c 40%, #88077c 60%, #ee8822 80%);
+      flex-direction: row;
+      list-style: none;
+      padding: 0.5rem;
+   }
+
+   main ul.subnav li {
+      list-style-position: inside;
+   }
+
+   main ul.subnav li a {
+      color: white;
+   }
+
+   nav {
+      padding: 1rem;
+      background-color: #dddddd;
    }
 
    nav ul {
       display: flex;
+      flex-direction: column;
       list-style: none;
       margin: 0;
       padding: 0;
@@ -34,6 +91,55 @@
 
    section {
       margin: 0;
+   }
+
+   main div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      height: min-content;
+      margin-bottom: 1rem;
+   }
+
+   main div section {
+      border: 1px solid grey;
+      width: max-content;
+      padding: 0 1rem 1rem 1rem;
+      justify-content: stretch;
+   }
+
+   output {
+      color: red;
+   }
+
+   section#formecho {
+      display: flex;
+      gap: 0 1rem;
+   }
+
+   section#formecho div {
+      display: block;
+   }
+
+   input[type='submit'], button {
+      border: none;
+      border-radius: 0.25rem;
+      background: linear-gradient(300deg, #090979 24%, #720667 40%, #720667 60%, #864d14 80%);
+      color: white;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      font-weight: 700;
+      font-size: 1rem;
+      position: relative;
+   }
+
+   input[type='submit']:hover, button:hover {
+      background: linear-gradient(300deg, #0f0fcc 24%, #88077c 40%, #88077c 60%, #ee8822 80%);
+   }
+
+   iframe {
+      width: 12rem;
+      border: 1px solid grey;
    }
 
    details {

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en/GB">
+<head>
+   <title>Popup demo</title>
+   <script src='/scripts/main.js'></script>
+   <link rel='stylesheet' href='/styles/styles.css' />
+   <link rel='stylesheet' href='/popup/demostyles.css' />
+   <script type='text/javascript'>
+      let openPopup = null;
+
+      function toggle(event) {
+         const trigger = event.target;
+         const popup = document.getElementById(trigger.id.slice(0, -7));
+
+         if (trigger.textContent === 'Open popup') {
+            popup.open();
+            popup.addEventListener("close", () => popupClosed(trigger, popup));
+            trigger.textContent = 'Close popup'
+         } else {
+            popup.close();
+         }
+      }
+
+      function popupClosed(trigger, popup) {
+         trigger.textContent = "Open popup";
+         popup.removeEventListener("close", popupClosed);
+      }
+   </script>
+</head>
+<body>
+<header>
+   <h1>Web Components</h1>
+</header>
+<nav>
+   <ul>
+      <li><a href='/'>Overview</a></li>
+      <li><a href='/datepicker/'>Date Picker</a></li>
+      <li class='selected'>Popup</li>
+      <li><a href='/selection/'>Selection</a></li>
+   </ul>
+</nav>
+<main>
+   <ul class='subnav'>
+      <li class='selected'>Demo</li>
+      <li><a href='/datepicker/docs.html'>Documentation</a></li>
+   </ul>
+
+   <div>
+      <section>
+         <h2>With default styling</h2>
+         <button id='popup1trigger' onclick='toggle(event)'>Open popup</button>
+         <se-popup id='popup1' anchor='popup1trigger' anchor-direction='se,sw,ne,nw,wm,em'>
+            <h2 class='popup'>Popup content</h2>
+            <p>
+               The popup will automatically size itself to fit the content, unless the content is styled with fixed
+               size.
+            </p>
+            <p>
+               Clicking on anything outside the popup will cause the popup to close. Whatever is clicked on will also
+               receive the click, and may respond to it as normal.
+            </p>
+            <p>
+               When a popup is opened, any already open popups are closed, so you can only have one open popup at a
+               time.
+            </p>
+         </se-popup>
+      </section>
+
+      <section>
+         <h2>With custom styling</h2>
+         <button id='popup2trigger' onclick='toggle(event)'>Open popup</button>
+         <se-popup id='popup2' anchor='popup2trigger' anchor-direction='se,sw,ne,nw,wm,em' class='alternate'>
+            <h2 class='popup'>Popup content</h2>
+            <p>
+               The popup will automatically size itself to fit the content, unless the content is styled with fixed size
+            </p>
+         </se-popup>
+      </section>
+   </div>
+
+   <section>
+      <details open>
+         <summary>Features</summary>
+         <ul>
+            <li>Automatically positions itself relative to an "anchor" element</li>
+            <li>
+               Options for where it appears relative to anchor can be set ir order of preference, and dependent on
+               there being enough space in that direction. The first direction it fits in will be used. If none fit
+               it will use the first.
+            </li>
+            <li>Styleable using CSS custom properties</li>
+            <li>Only one popup can be open at a time</li>
+            <li>Fires events when the popup is opened or closed</li>
+            <li></li>
+         </ul>
+      </details>
+   </section>
+</main>
+</body>
+</html>

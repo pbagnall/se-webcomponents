@@ -1,66 +1,23 @@
 <!doctype html>
 <html lang="en/GB">
 <head>
-   <title>Date Picker demo</title>
-   <script src='/scripts/main.js'></script>
+   <title>Web components demo</title>
    <link rel='stylesheet' href='/styles/styles.css' />
-   <link rel='stylesheet' href='/styles/demostyles.css' />
-   <script type='text/javascript'>
-      function dateChanged(event) {
-         const output = document.getElementById('output');
-         const date = dayjs(event.value);
-         output.replaceChildren(document.createTextNode(date.format("DD-MMM-YYYY")));
-      }
-
-      function popupTriggered() {
-         const trigger = document.getElementById("trigger");
-         if (trigger.textContent === 'Open popup') {
-            document.getElementById("popup").open();
-            trigger.textContent = 'Close popup'
-         } else {
-            document.getElementById("popup").close();
-         }
-      }
-
-      function popupClosed() {
-         const trigger = document.getElementById("trigger");
-         trigger.textContent = 'Open popup';
-      }
-   </script>
 </head>
 <body>
-   <h1>Date picker web component</h1>
-   <nav>
-      <ul>
-         <li class='selected'><a href='/'>Overview</a></li>
-         <li><a href='/docs.html'>Documentation</a></li>
-      </ul>
-   </nav>
-
-   <section>
-      <p>
-      <se-datepicker date='today' onchange='dateChanged(event)'></se-datepicker>
-      Selected date = <output id='output'>12-May-2023</output>
-      </p>
-
-      <se-datepicker class='topright alternate'></se-datepicker>
-      <se-datepicker class='bottomright' date='2023-1-12'></se-datepicker>
-
-      <button id='trigger' onclick='popupTriggered()'>Open popup</button>
-      <se-popup id='popup' anchor='trigger' anchor-direction='se,em,en' onclose='popupClosed()'>
-         This is a popup. It has a bunch of content in it. And then some more, and some more.
-      </se-popup>
-   </section>
-   <section>
-      <details open>
-         <summary>Features</summary>
-         <ul>
-            <li>Multiple month display - time is a continuum!</li>
-            <li>Infinitely Scrollable calendar</li>
-            <li>Styleable using CSS custom variables</li>
-            <li>Can be fully controlled by keyboard</li>
-         </ul>
-      </details>
-   </section>
+<header>
+   <h1>Web Components demonstration</h1>
+</header>
+<nav>
+   <ul>
+      <li class='selected'>Overview</li>
+      <li><a href='/datepicker/'>Date Picker</a></li>
+      <li><a href='/popup/'>Popup</a></li>
+      <li><a href='/selection/'>Selection</a></li>
+   </ul>
+</nav>
+<main>
+   Content
+</main>
 </body>
 </html>

@@ -28,13 +28,12 @@
 
    .topright {
       position: absolute;
-      top: 8px;
-      right: 8px;
+      right: 1rem;
    }
 
    .bottomright {
       position: fixed;
-      bottom: 8px;
-      right: 8px;
+      bottom: 1rem;
+      right: 1rem;
    }
 }

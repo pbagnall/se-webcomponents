@@ -1,0 +1,34 @@
+<html lang="en/GB">
+<head>
+    <script type='text/javascript'>
+        function showQuery() {
+            const search = new URLSearchParams(location.search);
+
+            let html='';
+            for (const [key, value] of search.entries()) {
+                html+=escapeHTML(`${key} = ${value}`)+"<br>";
+            }
+            document.getElementById('params').innerHTML = html;
+        };
+
+        function escapeHTML(html) {
+            return document.createElement('div').appendChild(document.createTextNode(html)).parentNode.innerHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => showQuery());
+    </script>
+    <style>
+        body {
+            margin: 0.5rem;
+            font-family: Avenir, sans-serif;
+        }
+    </style>
+    <title>Echo form data</title>
+</head>
+<body>
+<section>
+    <i>This is an iframe</i>
+    <div id='params'></div>
+</section>
+</body>
+</html>
