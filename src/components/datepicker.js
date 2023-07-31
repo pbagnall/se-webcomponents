@@ -1,41 +1,25 @@
 import './popup.js';
 import './selection.js';
 import { getShortcut } from '../lib/keyboard.js';
-import { getDataUrl } from '../lib/dataUrls.js';
-import dayjs from "dayjs/esm/index";
 import { extractDate } from "../lib/dateRecogniser.js";
 import { setupInput as si, updateValue as uv } from '../lib/inputElement.js';
+import { makeSvgIcons } from "../lib/svg.js";
+import dayjs from "dayjs/esm/index";
 
-function makeSVG(width, height, svgContent) {
-   return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>`+
-          `<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">`+
-          `<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" version="1.1" xmlns="http://www.w3.org/2000/svg">`+
-          `${svgContent}`+
-          `</svg>`;
-}
-
-const svgs = {
-   calendar: makeSVG(32, 32, `
+const icons = makeSvgIcons({
+   calendar: { width: 32, height: 32, svg:`
       <rect x="5" y="0" width="8" height="7" rx="2"/>
       <rect x="19" y="0" width="8" height="7" rx="2"/>
       <rect x="0" y="5" width="32" height="27" rx="4"/>
       <rect x="3" y="8" width="26" height="21" rx="1" fill='white'/>
       <path d="M13.073,24.949L10.604,24.949L10.604,15.641C9.701,16.485 8.638,17.109 7.413,17.513L7.413,15.272C8.058,15.061 8.758,14.661 9.514,14.072C10.27,13.484 10.788,12.797 11.069,12.011L13.073,12.011L13.073,24.949Z"/>
       <path d="M25.105,22.655L25.105,24.949L16.448,24.949C16.542,24.082 16.823,23.26 17.292,22.484C17.761,21.707 18.687,20.677 20.069,19.394C21.183,18.357 21.865,17.654 22.117,17.285C22.457,16.775 22.627,16.271 22.627,15.773C22.627,15.222 22.479,14.799 22.183,14.503C21.887,14.207 21.479,14.059 20.957,14.059C20.441,14.059 20.031,14.214 19.727,14.525C19.422,14.836 19.246,15.351 19.199,16.072L16.738,15.826C16.885,14.466 17.345,13.491 18.118,12.899C18.892,12.307 19.858,12.011 21.019,12.011C22.29,12.011 23.289,12.354 24.016,13.04C24.742,13.725 25.105,14.578 25.105,15.597C25.105,16.177 25.001,16.73 24.793,17.254C24.585,17.778 24.256,18.328 23.805,18.902C23.506,19.283 22.967,19.831 22.187,20.546C21.408,21.26 20.915,21.735 20.707,21.969C20.499,22.204 20.33,22.432 20.201,22.655L25.105,22.655Z"/>
-   `),
-   up: makeSVG(16, 16, '<path d="M8,3.2L14,12.8L2,12.8L8,3.2Z"/>'),
-   down: makeSVG(16, 16, '<path d="M8,12.8 L14,3.2 L2,3.2 L8,12.8Z"/>'),
-   upFast: makeSVG(16, 16, '<path d="M8,-0L14,9.6L2,9.6L8,-0Z"/><path d="M8,6.4L14,16L2,16L8,6.4Z"/>\n'),
-   downFast: makeSVG(16, 16, '<path d="M8,16L2,6.4L14,6.4L8,16Z"/><path d="M8,9.6L2,0L14,0L8,9.6Z"/>\n')
-};
-
-const icons = {
-   calendar: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.calendar),
-   up: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.up),
-   upFast: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.upFast),
-   down: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.down),
-   downFast: getDataUrl("image/svg+xml", 'entitiesStripSpaces', svgs.downFast)
-}
+   `},
+   up: { width: 16, height: 16, svg: '<path d="M8,3.2L14,12.8L2,12.8L8,3.2Z"/>'},
+   down: { width: 16, height: 16, svg: '<path d="M8,12.8 L14,3.2 L2,3.2 L8,12.8Z"/>'},
+   upFast: { width: 16, height: 16, svg: '<path d="M8,-0L14,9.6L2,9.6L8,-0Z"/><path d="M8,6.4L14,16L2,16L8,6.4Z"/>'},
+   downFast: { width: 16, height: 16, svg: '<path d="M8,16L2,6.4L14,6.4L8,16Z"/><path d="M8,9.6L2,0L14,0L8,9.6Z"/>'}
+});
 
 const datePickerTemplate = document.createElement('template');
 datePickerTemplate.innerHTML = `
@@ -307,6 +291,7 @@ class DatePicker extends HTMLElement {
       this.popupIsOpen = false;
    }
 
+   // noinspection JSUnusedGlobalSymbols
    connectedCallback() {
       this.dateValue = this.getDateAttribute();
       this.input.value = this.dateValue.format("DD MMM YYYY");
@@ -377,10 +362,11 @@ class DatePicker extends HTMLElement {
    }
 
    getDateAttribute() {
-      if (!this.getAttribute('date') === '') return dayjs();
+      if (this.getAttribute('date') !== '') return dayjs();
       if (this.getAttribute('date') === 'today') return dayjs();
 
       const dateValue = dayjs(this.attributes['date'].value);
+      // noinspection JSCheckFunctionSignatures
       if (isNaN(dateValue.valueOf())) {
          return dayjs();
       }
@@ -434,6 +420,8 @@ class DatePicker extends HTMLElement {
       // this should jump by ~one month, preserving day of week, 4 or 5 weeks
       "C-ArrowDown":  { type: "month", direction: 1 },
       "C-ArrowUp":    { type: "month", direction: -1 },
+      "M-ArrowDown":  { type: "month", direction: 1 },
+      "M-ArrowUp":    { type: "month", direction: -1 },
 
       // this jumps by ~1 year, preserving day of the week. 52 weeks
       "PageUp":       { type: 'delta', delta: -364 },
