@@ -9,6 +9,7 @@
               "header header"
               "list content";
       height: 100vh;
+      overflow: hidden;
    }
 
    header {
@@ -28,6 +29,7 @@
    }
 
    main {
+      grid-area: content;
       position: relative;
       padding: 1rem;
       overflow: auto;
@@ -56,6 +58,7 @@
    }
 
    nav {
+      grid-area: list;
       padding: 1rem;
       background-color: #dddddd;
    }
@@ -93,7 +96,7 @@
       margin: 0;
    }
 
-   main div {
+   main>div {
       display: flex;
       flex-wrap: wrap;
       gap: 1rem;
@@ -127,7 +130,6 @@
       background: linear-gradient(300deg, #090979 24%, #720667 40%, #720667 60%, #864d14 80%);
       color: white;
       padding: 0.5rem;
-      margin: 0.5rem 0;
       font-weight: 700;
       font-size: 1rem;
       position: relative;

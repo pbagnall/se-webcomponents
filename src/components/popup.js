@@ -10,13 +10,13 @@ popupTemplate.innerHTML = `
          border-width: var(--popup-borderWidth);      
          border-style: var(--popup-borderStyle);
          background-color: var(--popup-backgroundColor);
+         padding: var(--popup-padding);
          position: absolute;
          width: auto;
+         max-width: var(--max-width);
          z-index: 10;
-      }
-      
-      div#inner {
-         padding: var(--popup-padding);
+         
+         filter: drop-shadow(0 0 6px #00000060);
       }
       
       div#popup.closed {
@@ -24,9 +24,7 @@ popupTemplate.innerHTML = `
       }
    </style>
    <div id='popup' class='closed'>
-      <div id='inner'>
-         <slot>Popup content</slot>
-      </div>
+      <slot>Popup content</slot>
    </div>`;
 
 let currentPopup = null;
@@ -80,27 +78,15 @@ class PopUp extends HTMLElement {
          console.error(`Popup can't locate anchor element (id=${this.anchorId})`);
          return;
       }
-      const popupRect = this.popup.getBoundingClientRect();
+
       const anchorRect = anchor.getBoundingClientRect();
+      const ref = this.getReferenceElement();
 
       let position;
       for (let direction of this.anchorDirection) {
-         position = this.calcPosition(direction, anchorRect, popupRect, window.innerWidth, window.innerHeight);
+         position = this.calcPosition(direction, anchorRect, ref);
          if (position.fits) break;
       }
-
-      if (!position.fits) {
-         position = this.calcPosition(this.anchorDirection[0], anchorRect, popupRect, window.innerWidth, window.innerHeight);
-      }
-
-      let refRect = this.getReferenceElement().getBoundingClientRect();
-      position.x -= refRect.x;
-      position.y -= refRect.y;
-
-      this.style.position = 'absolute';
-      this.style.left = `${position.x}px`;
-      this.style.right = "0";
-      this.style.top = `${position.y}px`;
 
       // Let the event which caused this popup to open pass, before we start listening.
       requestAnimationFrame(() => {
@@ -108,78 +94,103 @@ class PopUp extends HTMLElement {
       });
    }
 
-   calcPosition(direction, anchorRect, popupRect, windowWidth, windowHeight) {
-      let position = { fits: true, direction: direction };
+   calcPosition(direction, anchorRect, ref) {
+      const refRect = ref.getBoundingClientRect();
+      const refWidth = ref.clientWidth;
+      const scrollBarWidth = refRect.width - ref.clientWidth;
+      const scrollBarHeight = refRect.height = ref.clientHeight;
+      const windowWidth = document.documentElement.clientWidth;
+      const windowHeight = document.documentElement.clientHeight;
+
+      let position = { fits: false, direction: direction };
+      this.popup.style.top = null;
+      this.popup.style.bottom = null;
+      this.popup.style.left = null;
+      this.popup.style.right = null;
+      let popupRect;
 
       switch (direction) {
          case "se":
          case "sm":
          case "sw":
-            position.y = anchorRect.bottom;
-            position.fits = position.y + popupRect.height <= windowHeight;
-            position.overY = windowHeight - position.y - popupRect.height;
+            this.popup.style.top = (anchorRect.bottom - refRect.top) + "px";
+            popupRect = this.popup.getBoundingClientRect();
+            position.fits = anchorRect.bottom + popupRect.height <= windowHeight;
             break;
 
          case "ne":
          case "nm":
          case "nw":
-            position.y = anchorRect.top - popupRect.height;
+            this.popup.style.bottom = (refRect.bottom - anchorRect.top) + "px";
+            popupRect = this.popup.getBoundingClientRect();
             position.fits = position.y >= 0;
-            position.overY = -position.y;
             break;
 
          case "en":
          case "em":
          case "es":
-            position.x = anchorRect.right;
+            this.popup.style.left = anchorRect.right+"px";
+            popupRect = this.popup.getBoundingClientRect();
             position.fits = position.x + popupRect.width <= windowWidth;
-            position.overX = windowWidth - position.x - popupRect.width;
             break;
 
          case "wn":
          case "wm":
          case "ws":
-            position.x = anchorRect.left - popupRect.width;
+            this.popup.style.right = (refRect.width - anchorRect.left) + "px";
+            popupRect = this.popup.getBoundingClientRect();
             position.fits = position.x >= 0;
-            position.overX = -position.x;
             break;
       }
 
       switch (direction) {
          case "se":
          case "ne":
-            position.x = anchorRect.left;
-            position.fits &&= position.x + popupRect.width <= windowWidth;
+            this.popup.style.left = (anchorRect.left - refRect.left)+"px";
+            popupRect = this.popup.getBoundingClientRect();
+            position.fits &&= anchorRect.left + popupRect.width <= windowWidth;
             break;
 
          case "sm":
          case "nm":
-            position.x = anchorRect.left + anchorRect.width/2 - popupRect.width/2;
+            this.popup.style.left = '0';
+            popupRect = this.popup.getBoundingClientRect();
+            if ((anchorRect.left + anchorRect.width/2) >= popupRect.width/2) {
+               this.popup.style.left = (anchorRect.left + anchorRect.width / 2 - popupRect.width / 2) + "px";
+            } else {
+               this.popup.style.left = '0';
+               this.popup.style.right = (refRect.right - (anchorRect.left + anchorRect.width / 2) * 2) + "px";
+            }
             position.fits &&= position.x >= 0;
             position.fits &&= position.x + popupRect.width <= windowWidth;
             break;
 
          case "sw":
          case "nw":
-            position.x = anchorRect.right - popupRect.width;
-            position.fits &&= position.x >= 0;
+            this.popup.style.right = (windowWidth - anchorRect.right - scrollBarWidth)+"px";
+            popupRect = this.popup.getBoundingClientRect();
+            position.fits &&= popupRect.left > 0;
             break;
 
          case "en":
          case "wn":
+            this.popup.style.bottom = (refRect.height - anchorRect.bottom) + "px";
             position.y = anchorRect.bottom - popupRect.height;
             position.fits &&= position.y >= 0;
             break;
 
          case "em":
          case "wm":
-            position.y = anchorRect.top + anchorRect.height/2 - popupRect.height/2;
+            this.popup.style.top = '0';
+            popupRect = this.popup.getBoundingClientRect();
+            this.popup.style.top = (anchorRect.top + anchorRect.height/2 - popupRect.height/2) + "px";
             position.fits &&= position.y >= 0;
             position.fits &&= position.y + popupRect.height/2 <= windowHeight;
             break;
 
          case "es":
          case "ws":
+            this.popup.style.top = anchorRect.top + "px";
             position.y = anchorRect.top;
             position.fits &&= position.y >= 0;
             break;
@@ -196,8 +207,9 @@ class PopUp extends HTMLElement {
          if (reference.nodeType === Node.DOCUMENT_FRAGMENT_NODE) reference = reference.host;
          if (reference.nodeType === Node.DOCUMENT_NODE) return document.documentElement;
 
-         let position = window.getComputedStyle(reference).getPropertyValue("position")
+         let position = window.getComputedStyle(reference).getPropertyValue("position");
          if (["absolute", "relative", "fixed"].includes(position)) return reference;
+         if (reference === document.documentElement) return reference;
       }
    }
 }

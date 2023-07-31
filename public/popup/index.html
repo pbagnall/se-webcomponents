@@ -1,4 +1,5 @@
 <!doctype html>
+<!--suppress HtmlFormInputWithoutLabel -->
 <html lang="en/GB">
 <head>
    <title>Popup demo</title>
@@ -10,7 +11,7 @@
 
       function toggle(event) {
          const trigger = event.target;
-         const popup = document.getElementById(trigger.id.slice(0, -7));
+         const popup = document.getElementById("popup"+trigger.id.slice(7));
 
          if (trigger.textContent === 'Open popup') {
             popup.open();
@@ -25,7 +26,73 @@
          trigger.textContent = "Open popup";
          popup.removeEventListener("close", popupClosed);
       }
+
+      let idNumber = 1;
+
+      function insertTrigger(title, klass, titleclass) {
+         const triggerTemplate = document.getElementById('triggerTemplate');
+         const triggerInstance = triggerTemplate.content.cloneNode(true);
+
+         const section = triggerInstance.querySelector("section");
+         if (titleclass) section.className = titleclass;
+
+         const header = triggerInstance.querySelector("h2");
+         header.innerHTML = title;
+
+         const button = triggerInstance.querySelector('button');
+         button.id = "trigger"+idNumber;
+         if (klass) button.className = klass;
+
+         const scripts = document.getElementsByTagName('script');
+         const script = scripts[scripts.length-1];
+         script.parentElement.insertBefore(triggerInstance, script);
+      }
+
+      function insertPopup(direction, klass) {
+         const popupTemplate = document.getElementById('popupTemplate');
+         const popupInstance = popupTemplate.content.cloneNode(true);
+         const popup = popupInstance.querySelector('se-popup');
+         popup.id = "popup"+idNumber;
+         popup.setAttribute('anchor', "trigger"+idNumber);
+         popup.setAttribute('anchor-direction', direction);
+         if (klass) popup.className = klass;
+         document.body.appendChild(popupInstance);
+      }
+
+      function insertTriggerAndPopup(title, direction, klass, titleclass) {
+         insertTrigger(title, klass, titleclass);
+         insertPopup(direction, klass);
+
+         idNumber++;
+      }
+
+      function setDirection(event) {
+         const value = event.target.value;
+         const idnum = event.target.name.slice(3);
+         const popup = document.getElementById('popup'+idnum);
+         popup.setAttribute('anchor-direction', value);
+         popup.close();
+         toggle({ target: document.getElementById('trigger'+idnum)});
+      }
    </script>
+
+   <template id='triggerTemplate'>
+      <section>
+         <h2>--Title--</h2>
+         <button id='buttonid' onclick='toggle(event)'>Open popup</button>
+      </section>
+   </template>
+
+   <template id='popupTemplate'>
+      <se-popup id='popupid' anchor='buttonid' anchor-direction='se,sw,ne,nw,em,wm'>
+         <h2 class='popup'>Popup content</h2>
+         <p>
+            The popup will automatically size itself to fit the content, unless the content is styled with fixed
+            size. This means the size of the popup depends on the position it finally gets. So the position needs
+            to be attempted for each possible position.
+         </p>
+      </se-popup>
+   </template>
 </head>
 <body>
 <header>
@@ -47,35 +114,71 @@
 
    <div>
       <section>
-         <h2>With default styling</h2>
-         <button id='popup1trigger' onclick='toggle(event)'>Open popup</button>
-         <se-popup id='popup1' anchor='popup1trigger' anchor-direction='se,sw,ne,nw,wm,em'>
-            <h2 class='popup'>Popup content</h2>
-            <p>
-               The popup will automatically size itself to fit the content, unless the content is styled with fixed
-               size.
-            </p>
-            <p>
-               Clicking on anything outside the popup will cause the popup to close. Whatever is clicked on will also
-               receive the click, and may respond to it as normal.
-            </p>
-            <p>
-               When a popup is opened, any already open popups are closed, so you can only have one open popup at a
-               time.
-            </p>
-         </se-popup>
+         <h2>Popup settings</h2>
+         <p>
+         Width: <input name='width' type='number'>
+         </p>
+         <p>
+         Min Width: <input name='minwidth' type='number'>
+         </p>
+         <p>
+         Max Width: <input name='maxwidth' type='number'>
+         </p>
+
+      </section>
+      <section>
+         <h2>Configurable, popup at end of DOM</h2>
+         <div class='directionDemo'>
+            <input class='row1 col2' type='radio' name='dir201' value='ne' onclick='setDirection(event)'>
+            <input class='row1 col3' type='radio' name='dir201' value='nm' onclick='setDirection(event)'>
+            <input class='row1 col4' type='radio' name='dir201' value='nw' onclick='setDirection(event)'>
+
+            <input class='row2 col1' type='radio' name='dir201' value='ws' onclick='setDirection(event)'>
+            <input class='row3 col1' type='radio' name='dir201' value='wm' onclick='setDirection(event)'>
+            <input class='row4 col1' type='radio' name='dir201' value='wn' onclick='setDirection(event)'>
+
+            <input class='row2 col5' type='radio' name='dir201' value='es' onclick='setDirection(event)'>
+            <input class='row3 col5' type='radio' name='dir201' value='em' onclick='setDirection(event)'>
+            <input class='row4 col5' type='radio' name='dir201' value='en' onclick='setDirection(event)'>
+
+            <input class='row5 col2' type='radio' name='dir201' value='se' onclick='setDirection(event)' checked>
+            <input class='row5 col3' type='radio' name='dir201' value='sm' onclick='setDirection(event)'>
+            <input class='row5 col4' type='radio' name='dir201' value='sw' onclick='setDirection(event)'>
+
+            <button id='trigger201' onclick='toggle(event)'>Open popup</button>
+         </div>
       </section>
 
-      <section>
-         <h2>With custom styling</h2>
-         <button id='popup2trigger' onclick='toggle(event)'>Open popup</button>
-         <se-popup id='popup2' anchor='popup2trigger' anchor-direction='se,sw,ne,nw,wm,em' class='alternate'>
-            <h2 class='popup'>Popup content</h2>
-            <p>
-               The popup will automatically size itself to fit the content, unless the content is styled with fixed size
-            </p>
-         </se-popup>
-      </section>
+<!--      <section>
+         <h2>Configurable, popup sibling of trigger</h2>
+         <div class='directionDemo'>
+            <input class='row1 col2' type='radio' name='dir202' value='ne' onclick='setDirection(event)'>
+            <input class='row1 col3' type='radio' name='dir202' value='nm' onclick='setDirection(event)'>
+            <input class='row1 col4' type='radio' name='dir202' value='nw' onclick='setDirection(event)'>
+
+            <input class='row2 col1' type='radio' name='dir202' value='ws' onclick='setDirection(event)'>
+            <input class='row3 col1' type='radio' name='dir202' value='wm' onclick='setDirection(event)'>
+            <input class='row4 col1' type='radio' name='dir202' value='wn' onclick='setDirection(event)'>
+
+            <input class='row2 col5' type='radio' name='dir202' value='es' onclick='setDirection(event)'>
+            <input class='row3 col5' type='radio' name='dir202' value='em' onclick='setDirection(event)'>
+            <input class='row4 col5' type='radio' name='dir202' value='en' onclick='setDirection(event)'>
+
+            <input class='row5 col2' type='radio' name='dir202' value='se' onclick='setDirection(event)' checked>
+            <input class='row5 col3' type='radio' name='dir202' value='sm' onclick='setDirection(event)'>
+            <input class='row5 col4' type='radio' name='dir202' value='sw' onclick='setDirection(event)'>
+
+            <button id='trigger202' onclick='toggle(event)'>Open popup</button>
+            <se-popup id='popup202' anchor='trigger202' anchor-direction='se,sw,ne,nw,em,wm'>
+               <h2 class='popup'>Popup content</h2>
+               <p>
+                  The popup will automatically size itself to fit the content, unless the content is styled with fixed
+                  size. This means the size of the popup depends on the position it finally gets. So the position needs
+                  to be attempted for each possible position.
+               </p>
+            </se-popup>
+         </div>
+      </section>-->
    </div>
 
    <section>
@@ -84,17 +187,52 @@
          <ul>
             <li>Automatically positions itself relative to an "anchor" element</li>
             <li>
-               Options for where it appears relative to anchor can be set ir order of preference, and dependent on
+               Options for where it appears relative to anchor can be set in order of preference, and dependent on
                there being enough space in that direction. The first direction it fits in will be used. If none fit
                it will use the first.
             </li>
             <li>Styleable using CSS custom properties</li>
             <li>Only one popup can be open at a time</li>
+            <li>Clicking outside a popup closes the popup</li>
             <li>Fires events when the popup is opened or closed</li>
-            <li></li>
          </ul>
       </details>
    </section>
+
+   <p style='height: 300px; display: flex; align-items: center;'>
+      Scroll down for more popups, for testing positioning when scrolled.
+   </p>
+
+   <div>
+      <script>insertTriggerAndPopup('With default styling', 'se,ne', null, '');</script>
+
+      <section>
+         <h2>Used by datepicker</h2>
+         <se-datepicker date='today'/>
+      </section>
+
+      <div></div>
+
+      <section>
+         <h2>With custom styling</h2>
+         <button id='trigger101' class='alternate' onclick='toggle(event)'>Open popup</button>
+      </section>
+      <se-popup id='popup101' anchor='trigger101' anchor-direction='nw' class='alternate'>
+         <h2 class='popup'>Popup content</h2>
+         <p>
+            The popup will automatically size itself to fit the content, unless the content is styled with fixed size
+         </p>
+      </se-popup>
+   </div>
 </main>
+<se-popup id='popup201' anchor='trigger201' anchor-direction='se,sw,ne,nw,em,wm'>
+   <h2 class='popup'>Popup content</h2>
+   <p>
+      The popup will automatically size itself to fit the content, unless the content is styled with fixed
+      size. This means the size of the popup depends on the position it finally gets. So the position needs
+      to be attempted for each possible position.
+   </p>
+</se-popup>
+
 </body>
 </html>
