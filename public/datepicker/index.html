@@ -11,21 +11,6 @@
          const date = dayjs(event.value);
          output.replaceChildren(document.createTextNode(date.format("DD-MMM-YYYY")));
       }
-
-      function popupTriggered() {
-         const trigger = document.getElementById("trigger");
-         if (trigger.textContent === 'Open popup') {
-            document.getElementById("popup").open();
-            trigger.textContent = 'Close popup'
-         } else {
-            document.getElementById("popup").close();
-         }
-      }
-
-      function popupClosed() {
-         const trigger = document.getElementById("trigger");
-         trigger.textContent = 'Open popup';
-      }
    </script>
 </head>
 <body>
@@ -65,19 +50,15 @@
             <h2>In a form</h2>
             <form action='/echo.html' target='frame' method='get'>
                <se-datepicker name='date' date='2023-1-12'></se-datepicker>
-               <br />
-               <input type='submit' value='Save date' />
+               <p>
+                  <input type='submit' value='Save date' />
+               </p>
             </form>
          </div>
          <div>
             <h2>Form target</h2>
             <iframe name='frame' src='/echo.html'></iframe>
          </div>
-
-         <button id='trigger' onclick='popupTriggered()'>Open popup</button>
-         <se-popup id='popup' anchor='trigger' anchor-direction='se,em,en' onclose='popupClosed()'>
-            This is a popup. It has a bunch of content in it. And then some more, and some more.
-         </se-popup>
       </section>
    </div>
 
