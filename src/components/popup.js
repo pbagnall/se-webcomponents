@@ -80,11 +80,12 @@ class PopUp extends HTMLElement {
       }
 
       const anchorRect = anchor.getBoundingClientRect();
-      const ref = this.getReferenceElement();
+      const popupRef = this.getReferenceElement(this);
+      const anchorRef = this.getReferenceElement(anchor);
 
       let position;
       for (let direction of this.anchorDirection) {
-         position = this.calcPosition(direction, anchorRect, ref);
+         position = this.calcPosition(direction, anchorRect, popupRef, anchorRef);
          if (position.fits) break;
       }
 
@@ -94,11 +95,10 @@ class PopUp extends HTMLElement {
       });
    }
 
-   calcPosition(direction, anchorRect, ref) {
-      const refRect = ref.getBoundingClientRect();
-      const refWidth = ref.clientWidth;
-      const scrollBarWidth = refRect.width - ref.clientWidth;
-      const scrollBarHeight = refRect.height = ref.clientHeight;
+   calcPosition(direction, anchorRect, popupRef, anchorRef) {
+      const refRect = popupRef.getBoundingClientRect();
+      const scrollBarWidth = refRect.width - popupRef.clientWidth;
+      const scrollBarHeight = refRect.height - popupRef.clientHeight;
       const windowWidth = document.documentElement.clientWidth;
       const windowHeight = document.documentElement.clientHeight;
 
@@ -109,46 +109,59 @@ class PopUp extends HTMLElement {
       this.popup.style.right = null;
       let popupRect;
 
-      switch (direction) {
-         case "se":
-         case "sm":
-         case "sw":
+      switch (direction.slice(0,1)) {
+         case "n":
+            this.popup.style.bottom = (refRect.bottom - anchorRect.top - scrollBarHeight) + "px";
+            popupRect = this.popup.getBoundingClientRect();
+            position.fits = position.y >= 0;
+            break;
+
+         case "s":
             this.popup.style.top = (anchorRect.bottom - refRect.top) + "px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits = anchorRect.bottom + popupRect.height <= windowHeight;
             break;
 
-         case "ne":
-         case "nm":
-         case "nw":
-            this.popup.style.bottom = (refRect.bottom - anchorRect.top) + "px";
-            popupRect = this.popup.getBoundingClientRect();
-            position.fits = position.y >= 0;
-            break;
-
-         case "en":
-         case "em":
-         case "es":
-            this.popup.style.left = anchorRect.right+"px";
+         case "e":
+            this.popup.style.left = (anchorRect.right - refRect.left) +"px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits = position.x + popupRect.width <= windowWidth;
             break;
 
-         case "wn":
-         case "wm":
-         case "ws":
-            this.popup.style.right = (refRect.width - anchorRect.left) + "px";
+         case "w":
+            this.popup.style.right = (refRect.right - anchorRect.left - scrollBarWidth) + "px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits = position.x >= 0;
             break;
       }
 
       switch (direction) {
+         case "en":
+         case "wn":
+            this.popup.style.bottom = (refRect.height - anchorRect.bottom + refRect.top) + "px";
+            position.y = anchorRect.bottom - popupRect.height;
+            position.fits &&= position.y >= 0;
+            break;
+
+         case "es":
+         case "ws":
+            this.popup.style.top = (anchorRect.top - refRect.top) + "px";
+            position.y = anchorRect.top;
+            position.fits &&= position.y >= 0;
+            break;
+
          case "se":
          case "ne":
             this.popup.style.left = (anchorRect.left - refRect.left)+"px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits &&= anchorRect.left + popupRect.width <= windowWidth;
+            break;
+
+         case "sw":
+         case "nw":
+            this.popup.style.right = (windowWidth - anchorRect.right - scrollBarWidth)+"px";
+            popupRect = this.popup.getBoundingClientRect();
+            position.fits &&= popupRect.left > 0;
             break;
 
          case "sm":
@@ -165,43 +178,25 @@ class PopUp extends HTMLElement {
             position.fits &&= position.x + popupRect.width <= windowWidth;
             break;
 
-         case "sw":
-         case "nw":
-            this.popup.style.right = (windowWidth - anchorRect.right - scrollBarWidth)+"px";
-            popupRect = this.popup.getBoundingClientRect();
-            position.fits &&= popupRect.left > 0;
-            break;
-
-         case "en":
-         case "wn":
-            this.popup.style.bottom = (refRect.height - anchorRect.bottom) + "px";
-            position.y = anchorRect.bottom - popupRect.height;
-            position.fits &&= position.y >= 0;
-            break;
-
          case "em":
          case "wm":
             this.popup.style.top = '0';
             popupRect = this.popup.getBoundingClientRect();
-            this.popup.style.top = (anchorRect.top + anchorRect.height/2 - popupRect.height/2) + "px";
+            if ((anchorRect.top + anchorRect.height/2) >= popupRect.height/2) {
+               this.popup.style.top = (anchorRect.top + anchorRect.height / 2 - popupRect.height / 2 - refRect.top) + "px";
+            } else {
+               this.popup.style.top = '0';
+               this.popup.style.bottom = (refRect.bottom - (anchorRect.top + anchorRect.height / 2) * 2 - refRect.top) + "px";
+            }
             position.fits &&= position.y >= 0;
             position.fits &&= position.y + popupRect.height/2 <= windowHeight;
-            break;
-
-         case "es":
-         case "ws":
-            this.popup.style.top = anchorRect.top + "px";
-            position.y = anchorRect.top;
-            position.fits &&= position.y >= 0;
             break;
       }
 
       return position;
    }
 
-   getReferenceElement() {
-      let reference = this;
-
+   getReferenceElement(reference) {
       while (true) {
          reference = reference.parentNode;
          if (reference.nodeType === Node.DOCUMENT_FRAGMENT_NODE) reference = reference.host;
