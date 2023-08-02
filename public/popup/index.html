@@ -113,6 +113,19 @@
    </ul>
 
    <div>
+      <script>insertTriggerAndPopup(
+              'Testing auto placement<br>(<s>ne,nm,nw,  sw,  en,  ws,wm,wn</s>, se,sm, es,em)',
+              'ne,nm,nw, sw, en, ws,wm,wn,         se,sm, es,em',
+              'fixedSize');
+      </script>
+      <div class='spacer'></div>
+      <script>insertTriggerAndPopup(
+              'Testing auto placement<br>(<s>ne,nm,nw,  se,sm,  en,em,es,  wn</s>, sw,  wm,ws)',
+              'ne,nm,nw, se,sm, en,em,es, wn,      sw,  wm,ws',
+              'fixedSize', 'rhs');
+      </script>
+   </div>
+   <div>
       <section>
          <h2>Popup settings</h2>
          <p>
@@ -148,7 +161,6 @@
             <button id='trigger201' onclick='toggle(event)'>Open popup</button>
          </div>
       </section>
-
       <section>
          <h2>Configurable, popup sibling of trigger</h2>
          <div class='directionDemo'>
@@ -179,6 +191,20 @@
             </se-popup>
          </div>
       </section>
+   </div>
+
+   <div>
+      <script>insertTriggerAndPopup(
+              'Testing auto placement<br>(<s>nw,  se,sm,sw,  em,es,  ws,wm,wn</s>, ne,nm, en)',
+              'nw,  se,sm,sw,  em,es,  ws,wm,wn,      en', //ne,nm, en',
+              'fixedSize');
+      </script>
+      <div class='spacer'></div>
+      <script>insertTriggerAndPopup(
+              'Testing auto placement<br>(<s>ne,nm, se,sm,sw, en,em,es, wm,ws</s>, nw, wn)',
+              'ne,nm, se,sm,sw, en,em,es, wm,ws,       nw, wn',
+              'fixedSize', 'rhs');
+      </script>
    </div>
 
    <section>
@@ -233,6 +259,5 @@
       to be attempted for each possible position.
    </p>
 </se-popup>
-
 </body>
 </html>

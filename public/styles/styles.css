@@ -109,7 +109,7 @@
       border: 1px solid grey;
       width: max-content;
       padding: 0 1rem 1rem 1rem;
-      justify-content: stretch;
+      flex-grow: 1;
    }
 
    output {

@@ -7,12 +7,29 @@
       width: 7.1em;
    }
 
-   se-popup {
-      /*--max-width: 400px;*/
+   s {
+      color: #bbbbbb;
+   }
+
+   se-popup.fixedSize {
+      --width: 400px;
+      --height: 300px;
+      --backgroundColor: #ffffbb;
+      --background: linear-gradient(142.8deg, #ffffbb 0%, #ffffbb 50%, #ffeebb 50%, #ffeebb 50%);
+      background-position: top;
+
+   }
+
+   section.rhs {
+      text-align: right;
+   }
+
+   div.spacer {
+      flex-grow: 1;
    }
 
    se-popup.alternate {
-      --backgroundColor: #ffffaa;
+      --backgroundColor: #aaffff;
       --padding: 3rem;
       --borderWidth: 4px;
       --borderStyle: dashed;
