@@ -207,7 +207,7 @@ dialogTemplate.innerHTML = `
           margin: 0;
       }
    </style>
-   <se-popup anchor='date-picker' anchor-direction='se,sw,ne,nw,em,wm'>
+   <se-popup anchor='date-picker' anchor-direction='se,sm,sw,ne,nm,nw,em,wm'>
       <div id='container'>
          <table>
             <thead>

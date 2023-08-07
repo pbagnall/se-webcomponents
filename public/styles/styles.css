@@ -187,4 +187,12 @@
    dl {
       margin: 0;
    }
+
+   dl {
+      display: grid;
+      grid-template-columns: max-content auto;
+   }
+
+   dt { grid-column: 1;}
+   dd { grid-column: 2; }
 }

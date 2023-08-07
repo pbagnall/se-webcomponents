@@ -19,6 +19,9 @@ popupTemplate.innerHTML = `
          max-width: var(--max-width);
          z-index: 10;
          
+         
+         /* added will-change to work around a bug in Safari */
+         will-change: filter;
          filter: drop-shadow(0 0 6px #00000060);
       }
       
@@ -68,11 +71,14 @@ class PopUp extends HTMLElement {
 
    open() {
       this.anchorId = this.attributes['anchor'].value;
-      this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
+      if (this.hasAttribute('anchor-direction')) {
+         this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
+      } else {
+         this.anchorDirection = 'se,sm,sw,ne,nm,nw,es,em,sn,ws,wm,wn'.split(',');
+      }
       this.anchorDirection = this.anchorDirection.map((value) => value.trim());
 
-      if (currentPopup === this) return;
-      if (currentPopup !== null) currentPopup.close();
+      if (currentPopup !== null && currentPopup !== this) currentPopup.close();
       currentPopup = this;
 
       this.popup.classList.remove("closed");
@@ -115,7 +121,8 @@ class PopUp extends HTMLElement {
 
       switch (direction.slice(0,1)) {
          case "n":
-            this.popup.style.bottom = (refRect.bottom - anchorRect.top - scrollBarHeight) + "px";
+            this.popup.style.bottom = (refRect.bottom - anchorRect.top - scrollBarHeight - popupRef.scrollTop) + "px";
+            console.log(this.popup.style.bottom, anchorRef.scrollTop);
             popupRect = this.popup.getBoundingClientRect();
             position.fits = anchorRect.top > popupRect.height;
             if (position.fits) console.log("n fits");
@@ -129,7 +136,7 @@ class PopUp extends HTMLElement {
             break;
 
          case "e":
-            this.popup.style.left = (anchorRect.right - refRect.left) +"px";
+            this.popup.style.left = (anchorRect.right - refRect.left - popupRef.scrollLeft) +"px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits = refRect.width - anchorRect.right - scrollBarWidth > popupRect.width;
             if (position.fits) console.log("e fits");
@@ -146,6 +153,8 @@ class PopUp extends HTMLElement {
       switch (direction) {
          case "en":
          case "wn":
+            // this.popup.style.left = '0';
+            // this.popup.style.right = '0';
             this.popup.style.bottom = (refRect.height - anchorRect.bottom + refRect.top) + "px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits &&= anchorRect.bottom > popupRect.height;
@@ -167,7 +176,7 @@ class PopUp extends HTMLElement {
 
          case "sw":
          case "nw":
-            this.popup.style.right = (windowWidth - anchorRect.right - scrollBarWidth)+"px";
+            this.popup.style.right = (refRect.width - anchorRect.right + refRect.left - scrollBarWidth)+"px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits &&= anchorRect.right > popupRect.width;
             break;

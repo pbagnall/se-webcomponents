@@ -1,0 +1,71 @@
+<!doctype html>
+<!--suppress HtmlFormInputWithoutLabel -->
+<html lang="en/GB">
+<head>
+    <title>Popup demo</title>
+    <script src='/scripts/main.js'></script>
+    <link rel='stylesheet' href='/styles/styles.css' />
+    <link rel='stylesheet' href='/popup/demostyles.css' />
+</head>
+<body>
+<header>
+    <h1>Web Components demonstration</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href='/'>Overview</a></li>
+        <li><a href='/datepicker/'>Date Picker</a></li>
+        <li class='selected'>Popup</li>
+        <li><a href='/selection/'>Selection</a></li>
+    </ul>
+</nav>
+<main>
+    <demo-subnav>
+        <a href='.'>Demo</a>
+        <a href='docs.html'>Documentation</a>
+        <a href='test.html'>Testing</a>
+        <a href='test2.html'>Testing</a>
+    </demo-subnav>
+
+    <div>
+        <section>
+            <h2 slot='title'>Testing auto placement NW</h2>
+            <demo-directionmap id='mapNW' popup='mapPopup' directions='se,sm,es,em'></demo-directionmap>
+        </section>
+        <section class='explain'>
+            <p>
+                You can only select the valid directions.
+            </p>
+            <p>
+                This test includes all the invalid directions (which should be
+                rejected automatically), and one valid direction, which you select. If the option you've selected
+                is not what you see, then one of the invalid directions must be being incorrectly invoked.
+            </p>
+        </section>
+        <section style='text-align: right;'>
+            <h2>Testing auto placement NE</h2>
+            <demo-directionmap id='mapNE' popup='mapPopup' directions='sw,ws,wm'></demo-directionmap>
+        </section>
+    </div>
+    <div style='position: absolute; left: 1rem; right: 1rem; bottom: 1rem;'>
+        <section>
+            <h2>Testing auto placement SW</h2>
+            <demo-directionmap id='mapSE' popup='mapPopup' directions='ne,nm,en'></demo-directionmap>
+        </section>
+        <section style='text-align: right;'>
+            <h2>Testing auto placement SE</h2>
+            <demo-directionmap id='mapSW' popup='mapPopup' directions='nw,wn'></demo-directionmap>
+        </section>
+    </div>
+
+</main>
+<se-popup class='fixedSize' id='mapPopup' anchor='mapSE' anchor-direction='se,sm,es,em'>
+    <h2 class='popup'>Popup content</h2>
+    <p>
+        The popup will automatically size itself to fit the content, unless the content is styled with fixed
+        size. This means the size of the popup depends on the position it finally gets. So the position needs
+        to be attempted for each possible position.
+    </p>
+</se-popup>
+</body>
+</html>

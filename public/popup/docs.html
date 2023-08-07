@@ -1,0 +1,134 @@
+<!doctype html>
+<!--suppress HtmlFormInputWithoutLabel -->
+<html lang="en/GB">
+<head>
+    <title>Popup demo</title>
+    <script src='/scripts/main.js'></script>
+    <link rel='stylesheet' href='/styles/styles.css' />
+    <link rel='stylesheet' href='/popup/demostyles.css' />
+
+    <script type='text/javascript'>
+        function toggle(event) {
+            const trigger = event.target;
+            const popup = document.getElementById("popup"+trigger.id.slice(7));
+
+            if (trigger.textContent === 'Open popup') {
+                popup.open();
+                popup.addEventListener("close", () => popupClosed(trigger, popup));
+                trigger.textContent = 'Close popup'
+            } else {
+                popup.close();
+            }
+        }
+
+        function popupClosed(trigger, popup) {
+            trigger.textContent = "Open popup";
+            popup.removeEventListener("close", popupClosed);
+        }
+
+        let idNumber = 1;
+
+        function insertTrigger(title, html, klass, titleclass) {
+            const triggerTemplate = document.getElementById('triggerTemplate');
+            const triggerInstance = triggerTemplate.content.cloneNode(true);
+
+            const section = triggerInstance.querySelector("section");
+            if (titleclass) section.className = titleclass;
+
+            const header = triggerInstance.querySelector("h2");
+            header.innerHTML = title;
+
+            const content = triggerInstance.querySelector("div");
+            if (html) {
+                content.innerHTML = html;
+            } else {
+                section.removeChild(content);
+            }
+
+            const button = triggerInstance.querySelector('section>button');
+            button.id = "trigger"+idNumber;
+            if (klass) button.className = klass;
+
+            const scripts = document.getElementsByTagName('script');
+            const script = scripts[scripts.length-1];
+            script.parentElement.insertBefore(triggerInstance, script);
+        }
+
+        function insertPopup(direction, klass) {
+            const popupTemplate = document.getElementById('popupTemplate');
+            const popupInstance = popupTemplate.content.cloneNode(true);
+            const popup = popupInstance.querySelector('se-popup');
+            popup.id = "popup"+idNumber;
+            popup.setAttribute('anchor', "trigger"+idNumber);
+            popup.setAttribute('anchor-direction', direction);
+            if (klass) popup.className = klass;
+            document.body.appendChild(popupInstance);
+        }
+
+        function insertTriggerAndPopup(title, html, direction, klass, titleclass) {
+            insertTrigger(title, html, klass, titleclass);
+            insertPopup(direction, klass);
+
+            idNumber++;
+        }
+
+        function setDirection(event) {
+            const value = event.target.value;
+            const idnum = event.target.name.slice(3);
+            const popup = document.getElementById('popup'+idnum);
+            popup.setAttribute('anchor-direction', value);
+            popup.close();
+            toggle({ target: document.getElementById('trigger'+idnum)});
+        }
+    </script>
+
+
+    <template id='triggerTemplate'>
+        <section>
+            <h2>--Title--</h2>
+            <div></div>
+            <button id='buttonid' onclick='toggle(event)'>Open popup</button>
+        </section>
+    </template>
+
+    <template id='popupTemplate'>
+        <se-popup id='popupid' anchor='buttonid' anchor-direction='se,sw,ne,nw,em,wm'>
+            <h2 class='popup'>Popup content</h2>
+            <p>
+                The popup will automatically size itself to fit the content, unless the content is styled with fixed
+                size. This means the size of the popup depends on the position it finally gets. So the position needs
+                to be attempted for each possible position.
+            </p>
+        </se-popup>
+    </template>
+</head>
+<body>
+<header>
+    <h1>Web Components demonstration</h1>
+</header>
+<nav>
+    <ul>
+        <li><a href='/'>Overview</a></li>
+        <li><a href='/datepicker/'>Date Picker</a></li>
+        <li class='selected'>Popup</li>
+        <li><a href='/selection/'>Selection</a></li>
+    </ul>
+</nav>
+<main>
+    <demo-subnav>
+        <a href='.'>Demo</a>
+        <a href='docs.html'>Documentation</a>
+        <a href='test.html'>Testing</a>
+        <a href='test2.html'>Testing</a>
+    </demo-subnav>
+
+    <section>
+        <h2>Popup documentation</h2>
+        <p>
+            The popup can be used a a container for any UI element which needs to appear next to another element in the
+            UI. For example, a popup menu, dropdown, or a complex input field such as a datepicker.
+        </p>
+    </section>
+</main>
+</body>
+</html>

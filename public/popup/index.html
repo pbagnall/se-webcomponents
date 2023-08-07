@@ -6,9 +6,8 @@
    <script src='/scripts/main.js'></script>
    <link rel='stylesheet' href='/styles/styles.css' />
    <link rel='stylesheet' href='/popup/demostyles.css' />
-   <script type='text/javascript'>
-      let openPopup = null;
 
+   <script type='text/javascript'>
       function toggle(event) {
          const trigger = event.target;
          const popup = document.getElementById("popup"+trigger.id.slice(7));
@@ -29,7 +28,7 @@
 
       let idNumber = 1;
 
-      function insertTrigger(title, klass, titleclass) {
+      function insertTrigger(title, html, klass, titleclass) {
          const triggerTemplate = document.getElementById('triggerTemplate');
          const triggerInstance = triggerTemplate.content.cloneNode(true);
 
@@ -39,7 +38,14 @@
          const header = triggerInstance.querySelector("h2");
          header.innerHTML = title;
 
-         const button = triggerInstance.querySelector('button');
+         const content = triggerInstance.querySelector("div");
+         if (html) {
+            content.innerHTML = html;
+         } else {
+            section.removeChild(content);
+         }
+
+         const button = triggerInstance.querySelector('section>button');
          button.id = "trigger"+idNumber;
          if (klass) button.className = klass;
 
@@ -59,8 +65,8 @@
          document.body.appendChild(popupInstance);
       }
 
-      function insertTriggerAndPopup(title, direction, klass, titleclass) {
-         insertTrigger(title, klass, titleclass);
+      function insertTriggerAndPopup(title, html, direction, klass, titleclass) {
+         insertTrigger(title, html, klass, titleclass);
          insertPopup(direction, klass);
 
          idNumber++;
@@ -76,9 +82,11 @@
       }
    </script>
 
+
    <template id='triggerTemplate'>
       <section>
          <h2>--Title--</h2>
+         <div></div>
          <button id='buttonid' onclick='toggle(event)'>Open popup</button>
       </section>
    </template>
@@ -107,104 +115,36 @@
    </ul>
 </nav>
 <main>
-   <ul class='subnav'>
-      <li class='selected'>Demo</li>
-      <li><a href='/datepicker/docs.html'>Documentation</a></li>
-   </ul>
+   <demo-subnav>
+      <a href='.'>Demo</a>
+      <a href='docs.html'>Documentation</a>
+      <a href='test.html'>Testing</a>
+      <a href='test2.html'>Testing</a>
+   </demo-subnav>
 
    <div>
-      <script>insertTriggerAndPopup(
-              'Testing auto placement<br>(<s>ne,nm,nw,  sw,  en,  ws,wm,wn</s>, se,sm, es,em)',
-              'ne,nm,nw, sw, en, ws,wm,wn,         se,sm, es,em',
-              'fixedSize');
-      </script>
-      <div class='spacer'></div>
-      <script>insertTriggerAndPopup(
-              'Testing auto placement<br>(<s>ne,nm,nw,  se,sm,  en,em,es,  wn</s>, sw,  wm,ws)',
-              'ne,nm,nw, se,sm, en,em,es, wn,      sw,  wm,ws',
-              'fixedSize', 'rhs');
-      </script>
-   </div>
-   <div>
-      <section>
-         <h2>Popup settings</h2>
-         <p>
-         Width: <input name='width' type='number'>
-         </p>
-         <p>
-         Min Width: <input name='minwidth' type='number'>
-         </p>
-         <p>
-         Max Width: <input name='maxwidth' type='number'>
-         </p>
-
+      <section style='text-align: right;' >
+         <h2>Configurable, popup at end of DOM</h2>
+         <demo-directionmap id='map1' popup='mapPopup' directions='ne,nm,nw,se,sm,sw,en,em,es,wn,wm,ws'></demo-directionmap>
       </section>
       <section>
-         <h2>Configurable, popup at end of DOM</h2>
-         <div class='directionDemo'>
-            <input class='row1 col2' type='radio' name='dir201' value='ne' onclick='setDirection(event)'>
-            <input class='row1 col3' type='radio' name='dir201' value='nm' onclick='setDirection(event)'>
-            <input class='row1 col4' type='radio' name='dir201' value='nw' onclick='setDirection(event)'>
-
-            <input class='row2 col1' type='radio' name='dir201' value='ws' onclick='setDirection(event)'>
-            <input class='row3 col1' type='radio' name='dir201' value='wm' onclick='setDirection(event)'>
-            <input class='row4 col1' type='radio' name='dir201' value='wn' onclick='setDirection(event)'>
-
-            <input class='row2 col5' type='radio' name='dir201' value='es' onclick='setDirection(event)'>
-            <input class='row3 col5' type='radio' name='dir201' value='em' onclick='setDirection(event)'>
-            <input class='row4 col5' type='radio' name='dir201' value='en' onclick='setDirection(event)'>
-
-            <input class='row5 col2' type='radio' name='dir201' value='se' onclick='setDirection(event)' checked>
-            <input class='row5 col3' type='radio' name='dir201' value='sm' onclick='setDirection(event)'>
-            <input class='row5 col4' type='radio' name='dir201' value='sw' onclick='setDirection(event)'>
-
-            <button id='trigger201' onclick='toggle(event)'>Open popup</button>
-         </div>
+         <h2>Popup settings</h2>
+         <p>Width: <input name='width' type='number'></p>
+         <p>Min Width: <input name='minwidth' type='number'></p>
+         <p>Max Width: <input name='maxwidth' type='number'></p>
       </section>
       <section>
          <h2>Configurable, popup sibling of trigger</h2>
-         <div class='directionDemo'>
-            <input class='row1 col2' type='radio' name='dir202' value='ne' onclick='setDirection(event)'>
-            <input class='row1 col3' type='radio' name='dir202' value='nm' onclick='setDirection(event)'>
-            <input class='row1 col4' type='radio' name='dir202' value='nw' onclick='setDirection(event)'>
-
-            <input class='row2 col1' type='radio' name='dir202' value='ws' onclick='setDirection(event)'>
-            <input class='row3 col1' type='radio' name='dir202' value='wm' onclick='setDirection(event)'>
-            <input class='row4 col1' type='radio' name='dir202' value='wn' onclick='setDirection(event)'>
-
-            <input class='row2 col5' type='radio' name='dir202' value='es' onclick='setDirection(event)'>
-            <input class='row3 col5' type='radio' name='dir202' value='em' onclick='setDirection(event)'>
-            <input class='row4 col5' type='radio' name='dir202' value='en' onclick='setDirection(event)'>
-
-            <input class='row5 col2' type='radio' name='dir202' value='se' onclick='setDirection(event)' checked>
-            <input class='row5 col3' type='radio' name='dir202' value='sm' onclick='setDirection(event)'>
-            <input class='row5 col4' type='radio' name='dir202' value='sw' onclick='setDirection(event)'>
-
-            <button id='trigger202' onclick='toggle(event)'>Open popup</button>
-            <se-popup id='popup202' anchor='trigger202' anchor-direction='se,sw,ne,nw,em,wm'>
-               <h2 class='popup'>Popup content</h2>
-               <p>
-                  The popup will automatically size itself to fit the content, unless the content is styled with fixed
-                  size. This means the size of the popup depends on the position it finally gets. So the position needs
-                  to be attempted for each possible position.
-               </p>
-            </se-popup>
-         </div>
+         <demo-directionmap id='map2' popup='mapPopup2' directions='ne,nm,nw,se,sm,sw,en,em,es,wn,wm,ws'></demo-directionmap>
+         <se-popup class='' id='mapPopup2' anchor='mapSE2' anchor-direction='se,sm,es,em'>
+            <h2 class='popup'>Popup content</h2>
+            <p>
+               The popup will automatically size itself to fit the content, unless the content is styled with fixed
+               size. This means the size of the popup depends on the position it finally gets. So the position needs
+               to be attempted for each possible position.
+            </p>
+         </se-popup>
       </section>
-   </div>
-
-   <div>
-      <script>insertTriggerAndPopup(
-              'Testing auto placement<br>(<s>nw,  se,sm,sw,  em,es,  ws,wm,wn</s>, ne,nm, en)',
-              'nw,  se,sm,sw,  em,es,  ws,wm,wn,      en', //ne,nm, en',
-              'fixedSize');
-      </script>
-      <div class='spacer'></div>
-      <script>insertTriggerAndPopup(
-              'Testing auto placement<br>(<s>ne,nm, se,sm,sw, en,em,es, wm,ws</s>, nw, wn)',
-              'ne,nm, se,sm,sw, en,em,es, wm,ws,       nw, wn',
-              'fixedSize', 'rhs');
-      </script>
    </div>
 
    <section>
@@ -225,12 +165,12 @@
       </details>
    </section>
 
-   <p style='height: 300px; display: flex; align-items: center;'>
+   <p style='height: 100px; display: flex; align-items: center;'>
       Scroll down for more popups, for testing positioning when scrolled.
    </p>
 
    <div>
-      <script>insertTriggerAndPopup('With default styling', 'se,ne', null, '');</script>
+      <script>insertTriggerAndPopup('With default styling', '', 'se,ne', null, '');</script>
 
       <section>
          <h2>Used by datepicker</h2>
@@ -251,7 +191,7 @@
       </se-popup>
    </div>
 </main>
-<se-popup id='popup201' anchor='trigger201' anchor-direction='se,sw,ne,nw,em,wm'>
+<se-popup class='' id='mapPopup' anchor='mapSE' anchor-direction='se,sm,es,em'>
    <h2 class='popup'>Popup content</h2>
    <p>
       The popup will automatically size itself to fit the content, unless the content is styled with fixed
