@@ -1,4 +1,4 @@
-import { setupInput, updateValue } from '../lib/inputElement.js';
+import { setupInput as si, updateValue as uv } from '../lib/inputElement.js';
 
 const selectionTemplate = document.createElement('template');
 selectionTemplate.innerHTML = `
@@ -45,27 +45,19 @@ class Selection extends HTMLElement {
         this.clickItem = (event) => this.itemClicked(event);
     }
 
-    setupInput = setupInput;
-    updateValue = updateValue;
+    setupInput = si;
+    updateValue = uv;
 
+    // noinspection JSUnusedGlobalSymbols
     connectedCallback() {
         this.setupInput();
 
         const observer = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
-                for (const node of mutation.addedNodes) {
-                    if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'OPTION') {
-                        this.list.appendChild(this.createItem(node.attributes.getNamedItem('value'), node.textContent));
-                    }
-                }
-
-                for (const node of mutation.removedNodes) {
-                    if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'OPTION') {
-                        const element = this.findItem(node.attributes.getNamedItem('value'), node.textContent);
-                        this.list.removeChild(element);
-                    }
-                }
+                for (const node of mutation.addedNodes) this.addListItem(node);
+                for (const node of mutation.removedNodes) this.removeListItem(node);
             }
+            this.ensureSelection();
         });
 
         const config = { attributes: true, childList: true, subtree: true };
@@ -78,21 +70,53 @@ class Selection extends HTMLElement {
         }
 
         const item = event.target;
-        const itemSelectedEvent = new Event("selected");
         item.classList.add("selected");
+
+        const itemSelectedEvent = new Event("selected");
         itemSelectedEvent.value = item.attributes['value'].value;
         itemSelectedEvent.description = item.textContent;
+
         this.updateValue(itemSelectedEvent.value);
         this.dispatchEvent(itemSelectedEvent);
     }
 
-    createItem(value, description) {
+    addListItem(node) {
+        if (node.nodeType !== Node.ELEMENT_NODE || node.tagName !== 'OPTION') return;
+
+        const value = node.attributes.getNamedItem('value');
+        const description = node.textContent;
         const element = document.createElement("div");
         element.className = 'item';
         element.appendChild(document.createTextNode(description));
         element.attributes['value'] = value;
-        element.addEventListener("click", this.clickItem);
-        return element;
+        element.addEventListener("click", (event) => { this.clickItem(event) });
+        this.list.appendChild(element);
+    }
+
+    ensureSelection() {
+        let nothingSelected = true;
+        for (const item of this.list.children) {
+            if (item.classList.contains('selected')) {
+                nothingSelected = false;
+                break;
+            }
+        }
+        if (nothingSelected) {
+            const item = this.list.firstElementChild;
+            const value = item.getAttribute('value');
+            item.classList.add('selected');
+            this.updateValue(value);
+        }
+    }
+
+    removeListItem(node) {
+        if (node.nodeType !== Node.ELEMENT_NODE || node.tagName !== 'OPTION') return;
+
+        const value = node.attributes.getNamedItem('value');
+        const description = node.textContent;
+
+        const element = this.findItem(value, description);
+        this.list.removeChild(element);
     }
 
     findItem(value, description) {

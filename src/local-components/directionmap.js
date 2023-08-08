@@ -83,7 +83,6 @@ directionmap.innerHTML = `
     </div>`;
 
 class DirectionMap extends HTMLElement {
-
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
@@ -91,7 +90,6 @@ class DirectionMap extends HTMLElement {
         this.opener = (event) => this.openPopup(event);
         this.closer = (event) => this.closePopup(event);
         this.selectedDirectionButton = null;
-
     }
 
     connectedCallback() {
@@ -119,26 +117,25 @@ class DirectionMap extends HTMLElement {
     }
 
     openPopup(event) {
-        if (this.popup) {
-            this.popup.close();
+        const button = event.target.closest("button");
+        if (this.selectedDirectionButton === button) {
+            this.selectedDirectionButton.classList.remove("selected");
+            return;
         }
 
-        const button = event.target.closest("button");
-        if (this.selectedDirectionButton === button) return;
         const allDirections = this.invalidDirections + "," + button.className;
 
-        if (this.selectedDirectionButton) {
-            this.selectedDirectionButton.classList.remove("selected");
-        }
+        requestAnimationFrame(() => {
+            this.popup = document.getElementById(this.getAttribute('popup'));
+            this.popup.addEventListener('close', this.closer);
 
-        this.popup = document.getElementById(this.getAttribute('popup'));
-        this.popup.setAttribute("anchor", this.id);
-        this.popup.setAttribute("anchor-direction", allDirections);
-        this.popup.open();
-        this.popup.addEventListener('close', this.closer);
+            this.popup.setAttribute("anchor", this.id);
+            this.popup.setAttribute("anchor-direction", allDirections);
+            this.popup.open();
 
-        button.classList.add("selected");
-        this.selectedDirectionButton = button;
+            button.classList.add("selected");
+            this.selectedDirectionButton = button;
+        });
     }
 
     closePopup(event) {

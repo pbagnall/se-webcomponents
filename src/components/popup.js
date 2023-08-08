@@ -48,6 +48,12 @@ class PopUp extends HTMLElement {
       }
    }
 
+   /**
+    * Gets an element by id, but not restricted to inside the component. Once it hits the shadowRoot it breaks out
+    * and looks further up the document tree
+    * @param id
+    * @returns {HTMLElement|null}
+    */
    getElementByIdBreakout(id) {
       let root = this.shadowRoot;
       let element = null;
@@ -72,11 +78,12 @@ class PopUp extends HTMLElement {
    open() {
       this.anchorId = this.attributes['anchor'].value;
       if (this.hasAttribute('anchor-direction')) {
-         this.anchorDirection = this.attributes['anchor-direction'].value.split(",");
+         this.anchorDirection = this.attributes['anchor-direction'].value
+             .split(",")
+             .map((value) => value.trim());
       } else {
          this.anchorDirection = 'se,sm,sw,ne,nm,nw,es,em,sn,ws,wm,wn'.split(',');
       }
-      this.anchorDirection = this.anchorDirection.map((value) => value.trim());
 
       if (currentPopup !== null && currentPopup !== this) currentPopup.close();
       currentPopup = this;
@@ -106,9 +113,10 @@ class PopUp extends HTMLElement {
    }
 
    calcPosition(direction, anchorRect, popupRef, anchorRef) {
-      const refRect = popupRef.getBoundingClientRect();
-      const scrollBarWidth = refRect.width - popupRef.clientWidth;
-      const scrollBarHeight = refRect.height - popupRef.clientHeight;
+      const popupRefRect = popupRef.getBoundingClientRect();
+      const anchorRefRect = anchorRef.getBoundingClientRect();
+      const scrollBarWidth = popupRefRect.width - popupRef.clientWidth;
+      const scrollBarHeight = popupRefRect.height - popupRef.clientHeight;
       const windowWidth = document.documentElement.clientWidth;
       const windowHeight = document.documentElement.clientHeight;
 
@@ -121,32 +129,27 @@ class PopUp extends HTMLElement {
 
       switch (direction.slice(0,1)) {
          case "n":
-            this.popup.style.bottom = (refRect.bottom - anchorRect.top - scrollBarHeight - popupRef.scrollTop) + "px";
-            console.log(this.popup.style.bottom, anchorRef.scrollTop);
+            this.popup.style.bottom = (popupRefRect.bottom - anchorRect.top - scrollBarHeight - popupRef.scrollTop) + "px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits = anchorRect.top > popupRect.height;
-            if (position.fits) console.log("n fits");
             break;
 
          case "s":
-            this.popup.style.top = (anchorRect.bottom - refRect.top) + "px";
+            this.popup.style.top = (anchorRect.bottom - popupRefRect.top) + "px";
             popupRect = this.popup.getBoundingClientRect();
-            position.fits = refRect.height - anchorRect.bottom - scrollBarHeight > popupRect.height;
-            if (position.fits) console.log("s fits");
+            position.fits = popupRefRect.height - anchorRect.bottom - scrollBarHeight > popupRect.height;
             break;
 
          case "e":
-            this.popup.style.left = (anchorRect.right - refRect.left - popupRef.scrollLeft) +"px";
+            this.popup.style.left = (anchorRect.right - popupRefRect.left - popupRef.scrollLeft) +"px";
             popupRect = this.popup.getBoundingClientRect();
-            position.fits = refRect.width - anchorRect.right - scrollBarWidth > popupRect.width;
-            if (position.fits) console.log("e fits");
+            position.fits = popupRefRect.width - anchorRect.right - scrollBarWidth > popupRect.width;
             break;
 
          case "w":
-            this.popup.style.right = (refRect.right - anchorRect.left - scrollBarWidth) + "px";
+            this.popup.style.right = (popupRefRect.right - anchorRect.left - scrollBarWidth) + "px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits = anchorRect.left > popupRect.width;
-            if (position.fits) console.log("w fits");
             break;
       }
 
@@ -155,28 +158,28 @@ class PopUp extends HTMLElement {
          case "wn":
             // this.popup.style.left = '0';
             // this.popup.style.right = '0';
-            this.popup.style.bottom = (refRect.height - anchorRect.bottom + refRect.top) + "px";
+            this.popup.style.bottom = (popupRefRect.height - anchorRect.bottom + popupRefRect.top) + "px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits &&= anchorRect.bottom > popupRect.height;
             break;
 
          case "es":
          case "ws":
-            this.popup.style.top = (anchorRect.top - refRect.top) + "px";
+            this.popup.style.top = (anchorRect.top - popupRefRect.top) + "px";
             popupRect = this.popup.getBoundingClientRect();
-            position.fits &&= refRect.height - anchorRect.top > popupRect.height;
+            position.fits &&= popupRefRect.height - anchorRect.top > popupRect.height;
             break;
 
          case "se":
          case "ne":
-            this.popup.style.left = (anchorRect.left - refRect.left)+"px";
+            this.popup.style.left = (anchorRect.left - popupRefRect.left)+"px";
             popupRect = this.popup.getBoundingClientRect();
-            position.fits &&= refRect.width - anchorRect.left - scrollBarWidth > popupRect.width;
+            position.fits &&= popupRefRect.width - anchorRect.left - scrollBarWidth > popupRect.width;
             break;
 
          case "sw":
          case "nw":
-            this.popup.style.right = (refRect.width - anchorRect.right + refRect.left - scrollBarWidth)+"px";
+            this.popup.style.right = (popupRefRect.width - anchorRect.right + popupRefRect.left - scrollBarWidth)+"px";
             popupRect = this.popup.getBoundingClientRect();
             position.fits &&= anchorRect.right > popupRect.width;
             break;
@@ -187,11 +190,14 @@ class PopUp extends HTMLElement {
             popupRect = this.popup.getBoundingClientRect();
             if ((anchorRect.left + anchorRect.width/2) >= popupRect.width/2) {
                this.popup.style.left = (anchorRect.left + anchorRect.width / 2 - popupRect.width / 2) + "px";
+               popupRect = this.popup.getBoundingClientRect();
             } else {
                this.popup.style.left = '0';
-               this.popup.style.right = (refRect.right - (anchorRect.left + anchorRect.width / 2) * 2) + "px";
+               this.popup.style.right = (popupRefRect.right - (anchorRect.left + anchorRect.width / 2) * 2) + "px";
+               popupRect = this.popup.getBoundingClientRect();
             }
-            position.fits &&= false;
+            position.fits &&= (anchorRect.left + anchorRect.width / 2) > (popupRect.width / 2);
+            position.fits &&= (anchorRefRect.width - anchorRect.right + anchorRect.width / 2) > popupRect.width / 2;
             break;
 
          case "em":
@@ -199,12 +205,16 @@ class PopUp extends HTMLElement {
             this.popup.style.top = '0';
             popupRect = this.popup.getBoundingClientRect();
             if ((anchorRect.top + anchorRect.height/2) >= popupRect.height/2) {
-               this.popup.style.top = (anchorRect.top + anchorRect.height / 2 - popupRect.height / 2 - refRect.top) + "px";
+               this.popup.style.top = (anchorRect.top + anchorRect.height / 2 - popupRect.height / 2 - popupRefRect.top) + "px";
+               popupRect = this.popup.getBoundingClientRect();
             } else {
                this.popup.style.top = '0';
-               this.popup.style.bottom = (refRect.bottom - (anchorRect.top + anchorRect.height / 2) * 2 - refRect.top) + "px";
+               this.popup.style.bottom = (popupRefRect.bottom - (anchorRect.top + anchorRect.height / 2) * 2 - popupRefRect.top) + "px";
+               popupRect = this.popup.getBoundingClientRect();
             }
-            position.fits &&= false;
+
+            position.fits &&= (anchorRect.top + anchorRect.height / 2) > (popupRect.height / 2);
+            position.fits &&= (anchorRefRect.height - anchorRect.bottom + anchorRect.height / 2) > popupRect.height / 2;
             break;
       }
 

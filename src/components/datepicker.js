@@ -79,9 +79,19 @@ datePickerTemplate.innerHTML = `
 `;
 
 const dialogTemplate = document.createElement('template');
+// language = HTML
 dialogTemplate.innerHTML = `
    <style id='popup'>
-      #container {
+      se-popup#calendar {
+         --padding: 0;
+      }
+      
+      se-popup#calendar::-webkit-scrollbar {
+         background: transparent;
+         width: 0;
+      }
+      
+      #cal {
           --datepicker-oddPeriodBackground: var(--oddPeriodBackground, #eaeaea);
           --datepicker-evenPeriodBackground: var(--evenPeriodBackground, #ffffff);
           --datepicker-toolbarBackground: var(--toolbarBackground, #d0d0d0);
@@ -100,29 +110,20 @@ dialogTemplate.innerHTML = `
           font-family: Avenir, sans-serif;
       }
 
-      #container::-webkit-scrollbar {
+      #cal::-webkit-scrollbar {
          width: 0;
          background: transparent;
       }
       
-      se-popup {
-         --padding: 0;
-      }
-      
-      se-popup::-webkit-scrollbar {
-         background: transparent;
-         width: 0;
-      }
-      
-      se-popup table {
+      #cal table {
          position: relative;
          border-spacing: 0;
          border-collapse: collapse;
          margin: 0;
       }
       
-      se-popup thead,
-      se-popup tfoot {
+      #cal thead,
+      #cal tfoot {
          position: sticky;
          background-color: var(--datepicker-toolbarBackground);
          padding: 0;
@@ -130,11 +131,11 @@ dialogTemplate.innerHTML = `
          z-index: 1;
       }
       
-      se-popup thead { top: 0; }
-      se-popup tfoot { bottom: 0; }
+      #cal thead { top: 0; }
+      #cal tfoot { bottom: 0; }
 
-      se-popup thead button,
-      se-popup tfoot button {
+      #cal thead button,
+      #cal tfoot button {
         height: 1.5rem;
         width: 1.5rem;
         border: none;
@@ -145,19 +146,19 @@ dialogTemplate.innerHTML = `
         background-position: center center;
       }
       
-      se-popup thead button#backmonth    { background-image: url(${icons.up }); }
-      se-popup thead button#backyear     { background-image: url(${icons.upFast }); }
-      se-popup tfoot button#forwardmonth { background-image: url(${icons.down }); }
-      se-popup tfoot button#forwardyear  { background-image: url(${icons.downFast }); }
+      #cal thead button#backmonth    { background-image: url(${icons.up }); }
+      #cal thead button#backyear     { background-image: url(${icons.upFast }); }
+      #cal tfoot button#forwardmonth { background-image: url(${icons.down }); }
+      #cal tfoot button#forwardyear  { background-image: url(${icons.downFast }); }
       
-      se-popup th.month, 
-      se-popup th.year {
+      #cal th.month, 
+      #cal th.year {
          vertical-align: top;
          position: relative;
       }
       
-      se-popup th.month span,
-      se-popup th.year span {
+      #cal th.month span,
+      #cal th.year span {
          position: sticky;
          top: 2rem;
          writing-mode: vertical-lr;
@@ -165,50 +166,50 @@ dialogTemplate.innerHTML = `
          padding: 3px;
       } 
       
-      se-popup tr.oddPeriod,
-      se-popup td.oddPeriod, 
-      se-popup th.oddPeriod {
+      #cal tr.oddPeriod,
+      #cal td.oddPeriod, 
+      #cal th.oddPeriod {
           background-color: var(--datepicker-oddPeriodBackground);      
       }
 
-      se-popup tr.evenPeriod,
-      se-popup td.evenPeriod,
-      se-popup th.evenPeriod {
+      #cal tr.evenPeriod,
+      #cal td.evenPeriod,
+      #cal th.evenPeriod {
           background-color: var(--datepicker-evenPeriodBackground);      
       }
       
-      se-popup td {
+      #cal td {
           padding: 2px;
           margin-left: 2px;
           text-align: center;
           min-width: 2.2em;
       }
       
-      se-popup td span {
+      #cal td span {
           display: inline-block;
           width: calc(100% - 4px);
           border-radius: 40px;
           border-color: transparent;
       }
 
-      se-popup td:hover span {
+      #cal td:hover span {
           color: var(--datepicker-hoverColor);
           background-color: var(--datepicker-hoverBackgroundColor);
       }
       
-      se-popup td.selected span {
+      #cal td.selected span {
           color: var(--datepicker-selectedColor);
           background-color: var(--datepicker-selectedBackgroundColor);
       }
       
-      se-popup td.today span {
+      #cal td.today span {
           border: 2px solid var(--datepicker-todayBorderColor);
           padding: 0;
           margin: 0;
       }
    </style>
-   <se-popup anchor='date-picker' anchor-direction='se,sm,sw,ne,nm,nw,em,wm'>
-      <div id='container'>
+   <se-popup id='calendar' anchor='date-picker' anchor-direction='se,sm,sw,ne,nm,nw,em,wm'>
+      <div id='cal'>
          <table>
             <thead>
                <tr>
@@ -261,7 +262,7 @@ interpretationTemplate.innerHTML = `
          --border-style: none;
       }
    </style>
-   <se-popup id='interpret' anchor='date-picker' anchor-direction='se,sw,ne,nw,wm,em'>
+   <se-popup id='interpret' anchor='date-picker' anchor-direction='se,sw,ne,nw,wm,em' >
       <se-selection>
       </se-selection>
    </se-popup>
@@ -289,6 +290,12 @@ class DatePicker extends HTMLElement {
       this.input.addEventListener('input', () => this.typing());
       this.input.addEventListener('change', () => this.commitTyping());
       this.popupIsOpen = false;
+
+      this.shadowRoot.appendChild(interpretationTemplate.content.cloneNode(true));
+      this.interpretationIsOpen = false;
+      this.interpretation = this.shadowRoot.querySelector("se-popup#interpret");
+      this.interpretationList = this.shadowRoot.querySelector('se-selection');
+      this.interpretationList.addEventListener("selected", (event) => this.selectInterpretation(event));
    }
 
    // noinspection JSUnusedGlobalSymbols
@@ -321,17 +328,19 @@ class DatePicker extends HTMLElement {
 
    openInterpretation() {
       if (!this.interpretationIsOpen) {
-         this.shadowRoot.appendChild(interpretationTemplate.content.cloneNode(true));
+         this.interpretation.open();
          this.interpretationIsOpen = true;
-         this.interpretation = this.shadowRoot.querySelector("se-popup#interpret");
-         this.interpretationList = this.shadowRoot.querySelector('se-selection')
       }
-      this.interpretation.open();
+   }
+
+   selectInterpretation(event) {
+      this.dateValue = dayjs(event.value);
+      this.input.value = this.dateValue.format("DD MMM YYYY");
+      this.closeInterpretation(true);
    }
 
    closeInterpretation(fireEvent) {
-      this.shadowRoot.removeChild(this.interpretation);
-      this.shadowRoot.removeChild(this.shadowRoot.querySelector('#interpretStyle'));
+      this.interpretation.close();
       this.interpretationIsOpen = false;
       if (fireEvent) this.fireDateChangeEvent(this.dateValue, true);
    }
@@ -352,7 +361,7 @@ class DatePicker extends HTMLElement {
       this.interpretationList.innerHTML = html;
    }
 
-   commitTyping() {
+   commitTyping(event) {
       const dates = extractDate(this.input.value);
       if (dates.length>0) {
          this.dateValue = dayjs(dates[0]);
@@ -387,8 +396,8 @@ class DatePicker extends HTMLElement {
 
       this.shadowRoot.appendChild(dialogTemplate.content.cloneNode(true));
       this.popupIsOpen = true;
-      this.popup = this.shadowRoot.querySelector("se-popup");
-      this.dialog = this.shadowRoot.querySelector("#container");
+      this.popup = this.shadowRoot.querySelector("se-popup#calendar");
+      this.dialog = this.shadowRoot.querySelector("#cal");
       this.dialog.addEventListener('scroll', this.scrolled);
       this.input = this.shadowRoot.querySelector("input.field");
 
@@ -730,7 +739,7 @@ class DatePicker extends HTMLElement {
    tidyUpAfterClose() {
       this.trigger.removeEventListener("keydown", this.keyboardHandler);
       this.dialog = null;
-      const popup = this.shadowRoot.querySelector("se-popup");
+      const popup = this.shadowRoot.querySelector("se-popup#calendar");
       const popupStyle=this.shadowRoot.querySelector("style#popup");
       popup.parentNode.removeChild(popup);
       popupStyle.parentNode.removeChild(popupStyle);

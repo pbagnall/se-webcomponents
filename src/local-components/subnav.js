@@ -54,7 +54,6 @@ class Subnav extends HTMLElement {
         if (node.nodeType !== Node.ELEMENT_NODE || node.tagName !== 'A') return;
 
         const pathname = node.getAttribute('href');
-        console.log(pathname, location.pathname);
         let content = '';
 
         if (location.pathname.endsWith('/'+pathname)) {
