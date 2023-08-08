@@ -46,4 +46,19 @@
    main>div>div {
       flex-grow: 1;
    }
+
+   main {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+   }
+
+   main>div {
+      margin: 0;
+   }
+
+   main>div.spacer {
+      flex-grow: 1;
+   }
 }

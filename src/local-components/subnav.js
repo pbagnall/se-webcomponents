@@ -6,7 +6,6 @@ subnavTemplate.innerHTML = `
             display: flex;
             gap: 2rem;
             margin: 0;
-            margin-bottom: 1rem;
             width: calc(100% - 1rem);
             color: white;
             background: rgb(44, 39, 125);
