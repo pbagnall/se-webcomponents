@@ -33,6 +33,7 @@ class Subnav extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
+    // noinspection JSUnusedGlobalSymbols
     connectedCallback() {
         this.list = document.createElement('ul');
         this.shadowRoot.appendChild(subnavTemplate.content.cloneNode(true));

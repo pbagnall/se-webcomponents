@@ -104,7 +104,7 @@ describe("match token types", () => {
 
 describe("extractDate", () => {
     const thisYear = new Date().getFullYear();
-    let thisMonth = new Date().getMonth();
+    let thisMonth = new Date().getMonth()+1;
     thisMonth = thisMonth>9 ? thisMonth : "0"+thisMonth;
 
     test.each([

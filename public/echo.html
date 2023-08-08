@@ -9,7 +9,7 @@
                 html+=escapeHTML(`${key} = ${value}`)+"<br>";
             }
             document.getElementById('params').innerHTML = html;
-        };
+        }
 
         function escapeHTML(html) {
             return document.createElement('div').appendChild(document.createTextNode(html)).parentNode.innerHTML;

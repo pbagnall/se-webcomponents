@@ -15,25 +15,4 @@
       --selectedBackgroundColor: #0000ff;
       --todayBorderColor: #80ccff;
    }
-
-   button#trigger {
-      position: fixed;
-      bottom: 8px;
-      left: 8px;
-      background-color: grey;
-      color: white;
-      border: 2px solid black;
-      border-radius: 3px;
-   }
-
-   .topright {
-      position: absolute;
-      right: 1rem;
-   }
-
-   .bottomright {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-   }
 }

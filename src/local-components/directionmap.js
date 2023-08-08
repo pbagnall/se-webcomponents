@@ -92,6 +92,7 @@ class DirectionMap extends HTMLElement {
         this.selectedDirectionButton = null;
     }
 
+    // noinspection JSUnusedGlobalSymbols
     connectedCallback() {
         const valid = this.getAttribute('directions').split(",");
         const directions = [
@@ -138,7 +139,7 @@ class DirectionMap extends HTMLElement {
         });
     }
 
-    closePopup(event) {
+    closePopup() {
         this.popup.removeEventListener('close', this.closer);
 
         for (const button of this.shadowRoot.querySelectorAll("button")) {

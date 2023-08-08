@@ -117,8 +117,6 @@ class PopUp extends HTMLElement {
       const anchorRefRect = anchorRef.getBoundingClientRect();
       const scrollBarWidth = popupRefRect.width - popupRef.clientWidth;
       const scrollBarHeight = popupRefRect.height - popupRef.clientHeight;
-      const windowWidth = document.documentElement.clientWidth;
-      const windowHeight = document.documentElement.clientHeight;
 
       let position = { fits: false, direction: direction };
       this.popup.style.top = null;

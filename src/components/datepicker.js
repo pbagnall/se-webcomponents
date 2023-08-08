@@ -361,7 +361,7 @@ class DatePicker extends HTMLElement {
       this.interpretationList.innerHTML = html;
    }
 
-   commitTyping(event) {
+   commitTyping() {
       const dates = extractDate(this.input.value);
       if (dates.length>0) {
          this.dateValue = dayjs(dates[0]);
