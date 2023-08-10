@@ -1,5 +1,4 @@
 <!doctype html>
-<!--suppress HtmlFormInputWithoutLabel -->
 <html lang="en/GB">
 <head>
    <title>Popup demo</title>
@@ -8,13 +7,15 @@
    <link rel='stylesheet' href='/popup/demostyles.css' />
 
    <script type='text/javascript'>
+      const popupClosedHandler = () => popupClosed(trigger, popup);
+
       function toggle(event) {
          const trigger = event.target;
          const popup = document.getElementById("popup"+trigger.id.slice(7));
 
          if (trigger.textContent === 'Open popup') {
             popup.open();
-            popup.addEventListener("close", () => popupClosed(trigger, popup));
+            popup.addEventListener("close", popupClosedHandler);
             trigger.textContent = 'Close popup'
          } else {
             popup.close();
@@ -23,75 +24,9 @@
 
       function popupClosed(trigger, popup) {
          trigger.textContent = "Open popup";
-         popup.removeEventListener("close", popupClosed);
-      }
-
-      let idNumber = 1;
-
-      function insertTrigger(title, html, klass, titleclass) {
-         const triggerTemplate = document.getElementById('triggerTemplate');
-         const triggerInstance = triggerTemplate.content.cloneNode(true);
-
-         const section = triggerInstance.querySelector("section");
-         if (titleclass) section.className = titleclass;
-
-         const header = triggerInstance.querySelector("h2");
-         header.innerHTML = title;
-
-         const content = triggerInstance.querySelector("div");
-         if (html) {
-            content.innerHTML = html;
-         } else {
-            section.removeChild(content);
-         }
-
-         const button = triggerInstance.querySelector('section>button');
-         button.id = "trigger"+idNumber;
-         if (klass) button.className = klass;
-
-         const scripts = document.getElementsByTagName('script');
-         const script = scripts[scripts.length-1];
-         script.parentElement.insertBefore(triggerInstance, script);
-      }
-
-      function insertPopup(direction, klass) {
-         const popupTemplate = document.getElementById('popupTemplate');
-         const popupInstance = popupTemplate.content.cloneNode(true);
-         const popup = popupInstance.querySelector('se-popup');
-         popup.id = "popup"+idNumber;
-         popup.setAttribute('anchor', "trigger"+idNumber);
-         popup.setAttribute('anchor-direction', direction);
-         if (klass) popup.className = klass;
-         document.body.appendChild(popupInstance);
-      }
-
-      function insertTriggerAndPopup(title, html, direction, klass, titleclass) {
-         insertTrigger(title, html, klass, titleclass);
-         insertPopup(direction, klass);
-
-         idNumber++;
+         popup.removeEventListener("close", popupClosedHandler);
       }
    </script>
-
-
-   <template id='triggerTemplate'>
-      <section>
-         <h2>--Title--</h2>
-         <div></div>
-         <button id='buttonid' onclick='toggle(event)'>Open popup</button>
-      </section>
-   </template>
-
-   <template id='popupTemplate'>
-      <se-popup id='popupid' anchor='buttonid' anchor-direction='se,sw,ne,nw,em,wm'>
-         <h2 class='popup'>Popup content</h2>
-         <p>
-            The popup will automatically size itself to fit the content, unless the content is styled with fixed
-            size. This means the size of the popup depends on the position it finally gets. So the position needs
-            to be attempted for each possible position.
-         </p>
-      </se-popup>
-   </template>
 </head>
 <body>
 <header>
@@ -161,7 +96,10 @@
    </p>
 
    <div>
-      <script>insertTriggerAndPopup('With default styling', '', 'se,ne', null, '');</script>
+      <section>
+         <h2>With default styling</h2>
+         <button id="trigger1" onclick="toggle(event)">Open popup</button>
+      </section>
 
       <section>
          <h2>Used by datepicker</h2>
@@ -182,6 +120,14 @@
       </se-popup>
    </div>
 </main>
+<se-popup id="popup1" anchor="trigger1" anchor-direction="se,ne">
+   <h2 class="popup">Popup content</h2>
+   <p>
+      The popup will automatically size itself to fit the content, unless the content is styled with fixed
+      size. This means the size of the popup depends on the position it finally gets. So the position needs
+      to be attempted for each possible position.
+   </p>
+</se-popup>
 <se-popup class='' id='mapPopup' anchor='mapSE' anchor-direction='se,sm,es,em'>
    <h2 class='popup'>Popup content</h2>
    <p>
