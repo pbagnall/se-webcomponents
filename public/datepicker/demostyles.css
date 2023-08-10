@@ -1,12 +1,7 @@
 @media screen {
-   se-popup {
-      --backgroundColor: #ffffaa;
-      --padding: 0.25rem;
-   }
-
    se-datepicker.alternate {
-      --oddMonthBackground: #eaeaff;
-      --evenMonthBackground: #ffffff;
+      --oddPeriodBackground: #eaeaff;
+      --evenPeriodBackground: #ffffff;
       --toolbarBackground: #8888ff;
       --foreground: #000000;
       --hoverColor: #ffffff;
