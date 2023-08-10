@@ -34,103 +34,100 @@
       position: relative;
       padding: 1rem;
       overflow: auto;
-   }
 
-   main ul.subnav {
-      display: flex;
-      gap: 2rem;
-      margin: 0 0 1rem 0;
-      width: calc(100% - 1rem);
-      color: white;
-      background: rgb(44, 39, 125);
-      background: linear-gradient(325deg, #090979 24%, #88077c 40%, #88077c 60%, #ee8822 80%);
-      flex-direction: row;
-      list-style: none;
-      padding: 0.5rem;
-   }
+      & ul.subnav {
+         display: flex;
+         gap: 2rem;
+         margin: 0 0 1rem 0;
+         width: calc(100% - 1rem);
+         color: white;
+         background: rgb(44, 39, 125);
+         background: linear-gradient(325deg, #090979 24%, #88077c 40%, #88077c 60%, #ee8822 80%);
+         flex-direction: row;
+         list-style: none;
+         padding: 0.5rem;
 
-   main ul.subnav li {
-      list-style-position: inside;
-   }
+         & li {
+            list-style-position: inside;
 
-   main ul.subnav li a {
-      color: white;
+            & a {
+               color: white;
+            }
+         }
+      }
+
+      & section {
+         margin: 0;
+
+         &#formecho {
+            display: flex;
+            gap: 0 1rem;
+
+            & div {
+               display: block;
+            }
+         }
+      }
+
+      &>div {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 1rem;
+         height: min-content;
+         margin-bottom: 1rem;
+      }
+
+      & div section {
+         border: 1px solid grey;
+         width: max-content;
+         padding: 0 1rem 1rem 1rem;
+         flex-grow: 1;
+      }
    }
 
    nav {
       grid-area: list;
       padding: 1rem;
       background-color: #dddddd;
-   }
 
-   nav ul {
-      display: flex;
-      flex-direction: column;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      gap: 0.5rem;
-   }
+      & ul {
+         display: flex;
+         flex-direction: column;
+         list-style: none;
+         margin: 0;
+         padding: 0;
+         gap: 0.5rem;
 
-   nav ul li {
-      margin: 0;
-   }
+         & li {
+            margin: 0;
 
-   nav ul li a,
-   nav ul li.selected {
-      border-radius: 4px;
-      padding: 0.2rem 0.75rem;
-   }
+            & a {
+               background-color: #eeeeee;
+               display: block;
+               color: inherit;
+               text-decoration: none;
+            }
 
-   nav ul li a {
-      background-color: #eeeeee;
-      display: block;
-      color: inherit;
-      text-decoration: none;
-   }
+            &.selected {
+               background-color: #000000;
+               color: white;
+            }
+         }
 
-   nav ul li.selected {
-      background-color: #000000;
-      color: white;
-   }
-
-   h1 {
-      margin: 0.5rem 0 0.25rem 0;
-   }
-
-   section {
-      margin: 0;
-   }
-
-   main>div {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      height: min-content;
-      margin-bottom: 1rem;
-   }
-
-   main div section {
-      border: 1px solid grey;
-      width: max-content;
-      padding: 0 1rem 1rem 1rem;
-      flex-grow: 1;
+         & li a,
+         & li.selected {
+            border-radius: 4px;
+            padding: 0.2rem 0.75rem;
+         }
+      }
    }
 
    output {
       color: red;
    }
 
-   section#formecho {
-      display: flex;
-      gap: 0 1rem;
-   }
-
-   section#formecho div {
-      display: block;
-   }
-
-   input[type='submit'], button {
+   button,
+   input[type='submit'] {
       border: none;
       border-radius: 0.25rem;
       background: linear-gradient(300deg, #090979 24%, #720667 40%, #720667 60%, #864d14 80%);
@@ -139,10 +136,10 @@
       font-weight: 700;
       font-size: 1rem;
       position: relative;
-   }
 
-   input[type='submit']:hover, button:hover {
-      background: linear-gradient(300deg, #0f0fcc 24%, #88077c 40%, #88077c 60%, #ee8822 80%);
+      &:hover {
+         background: linear-gradient(300deg, #0f0fcc 24%, #88077c 40%, #88077c 60%, #ee8822 80%);
+      }
    }
 
    iframe {
@@ -155,49 +152,31 @@
       border: 1px solid #bbbbbb;
       padding: 0 0.5rem;
       margin-bottom: 0.5rem;
-   }
 
-   summary {
-      margin: 0 -0.5rem 0 -0.5rem;
-      padding: 0 0.5rem;
-      font-size: 120%;
-      background-color: #eeeeee;
-   }
+      & summary {
+         margin: 0 -0.5rem 0 -0.5rem;
+         padding: 0 0.5rem;
+         font-size: 120%;
+         background-color: #eeeeee;
+      }
 
-   details[open] summary {
-      border-bottom: 1px solid #bbbbbb;
-      margin: 0 -0.5rem 0.5rem -0.5rem;
-   }
+      & ul {
+         margin: 0;
+         padding: 0 1.25rem;
+      }
 
-   details ul {
-      margin: 0;
-      padding: 0 1.25rem;
-   }
-
-   details.li {
-      border: none;
-      background-color: transparent;
-      margin: 0;
-      padding: 0;
-   }
-
-   details.li summary {
-      margin: 0;
-      padding: 0;
-      border: none;
-      font-size: 100%;
-      background-color: transparent;
+      &[open] summary {
+         border-bottom: 1px solid #bbbbbb;
+         margin: 0 -0.5rem 0.5rem -0.5rem;
+      }
    }
 
    dl {
       margin: 0;
-   }
-
-   dl {
       display: grid;
       grid-template-columns: max-content auto;
-   }
 
-   dt { grid-column: 1;}
-   dd { grid-column: 2; }
+      & dt { grid-column: 1;}
+      & dd { grid-column: 2; }
+   }
 }
