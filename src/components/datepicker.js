@@ -74,7 +74,7 @@ datePickerTemplate.innerHTML = `
         div.datepicker       button.trigger:active { background-color: #aaaaaa; }
     </style>
     <div class='datepicker' id='date-picker'>
-    <input class='field' type='text' value='no selection' /><button tabindex=0 class='trigger'></button>
+    <input class='field' type='text' value='no selection' /><button tabindex='-1' class='trigger'></button>
     </div>
 `;
 
@@ -285,10 +285,10 @@ class DatePicker extends HTMLElement {
       this.keyboardHandler = (e) => this.keyboard(e);
 
       this.trigger.addEventListener('click', () => this.triggerClicked());
-      const focus = (event) => this.inputFocussed(event);
-      this.input.addEventListener('focus', focus);
-      this.input.addEventListener('input', () => this.typing());
-      this.input.addEventListener('change', () => this.commitTyping());
+      this.input.addEventListener('focus', (event) => this.inputFocussed(event));
+      this.input.addEventListener('keydown', (event) => this.keydown(event));
+      this.input.addEventListener('input', (event) => this.typing(event));
+      this.input.addEventListener('change', (event) => this.commitTyping(event));
       this.popupIsOpen = false;
 
       this.shadowRoot.appendChild(interpretationTemplate.content.cloneNode(true));
@@ -317,7 +317,33 @@ class DatePicker extends HTMLElement {
       this.input.setSelectionRange(0, this.input.value.length);
    }
 
-   typing() {
+   keydown(event) {
+      console.log('keydown fn');
+
+      if (this.interpretationIsOpen) {
+         switch (event.code) {
+            case "ArrowDown":
+               this.interpretationList.selectNext();
+               event.preventDefault();
+               break;
+            case "ArrowUp":
+               this.interpretationList.selectPrevious();
+               event.preventDefault();
+               break;
+            case "Enter":
+               this.interpretationList.commit();
+               break;
+         }
+      } else {
+         switch (event.code) {
+            case "Enter":
+               this.triggerClicked();
+               break;
+         }
+      }
+   }
+
+   typing(event) {
       const dates = extractDate(this.input.value);
       if (dates.length>0) {
          this.openInterpretation(dates);
@@ -362,11 +388,13 @@ class DatePicker extends HTMLElement {
    }
 
    commitTyping() {
-      const dates = extractDate(this.input.value);
-      if (dates.length>0) {
-         this.dateValue = dayjs(dates[0]);
-         this.input.value = this.dateValue.format("DD MMM YYYY");
-         this.closeInterpretation(true);
+      if (this.interpretationIsOpen) {
+         const dates = extractDate(this.input.value);
+         if (dates.length > 0) {
+            this.dateValue = dayjs(dates[0]);
+            this.input.value = this.dateValue.format("DD MMM YYYY");
+            this.closeInterpretation(true);
+         }
       }
    }
 
@@ -401,9 +429,6 @@ class DatePicker extends HTMLElement {
       this.dialog.addEventListener('scroll', this.scrolled);
       this.input = this.shadowRoot.querySelector("input.field");
 
-      this.trigger.addEventListener("keydown", this.keyboardHandler);
-      this.trigger.focus();
-
       const upMonth = this.shadowRoot.getElementById('backmonth');
       const upYear = this.shadowRoot.getElementById('backyear');
       const downMonth = this.shadowRoot.getElementById('forwardmonth');
@@ -417,6 +442,11 @@ class DatePicker extends HTMLElement {
       this.popup.addEventListener("open", this.popupOpened);
       this.popup.addEventListener("close", this.popupClosed);
       this.popup.open();
+
+      requestAnimationFrame(() => {
+         this.trigger.addEventListener("keydown", this.keyboardHandler);
+         this.trigger.focus();
+      });
    }
 
    keyboardCommands = {

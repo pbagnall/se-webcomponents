@@ -13,7 +13,6 @@ subnavTemplate.innerHTML = `
             flex-direction: row;
             list-style: none;
             padding: 0.5rem;
-            
         }
 
         ul li {

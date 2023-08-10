@@ -109,6 +109,33 @@ class Selection extends HTMLElement {
         }
     }
 
+    selectNextOrPrevious(nextOrPrevious) {
+        for (const div of this.list.children) {
+            if (div.classList.contains("selected") && div[nextOrPrevious]) {
+                div.classList.remove("selected");
+                div[nextOrPrevious].classList.add("selected");
+                break;
+            }
+        }
+    }
+
+    selectNext() { return this.selectNextOrPrevious('nextElementSibling'); }
+    selectPrevious() { return this.selectNextOrPrevious('previousElementSibling'); }
+
+    commit() {
+        for (const item of this.list.children) {
+            if (item.classList.contains("selected")) {
+                const itemSelectedEvent = new Event("selected");
+                itemSelectedEvent.value = item.attributes['value'].value;
+                itemSelectedEvent.description = item.textContent;
+
+                this.updateValue(itemSelectedEvent.value);
+                this.dispatchEvent(itemSelectedEvent);
+                return;
+            }
+        }
+    }
+
     removeListItem(node) {
         if (node.nodeType !== Node.ELEMENT_NODE || node.tagName !== 'OPTION') return;
 
