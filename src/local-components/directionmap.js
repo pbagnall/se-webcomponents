@@ -26,6 +26,7 @@ directionmap.innerHTML = `
             justify-content: space-between;
             align-items: center;
             font-family: 'Fira Sans', sans-serif;
+            font-size: 0.75rem;
             font-weight: 500;
             background: #bbbbbb;
             color: black;
