@@ -5,7 +5,7 @@ subnavTemplate.innerHTML = `
         ul {
             display: flex;
             gap: 2rem;
-            margin: 0;
+            margin: 0 0 1rem 0;
             width: calc(100% - 1rem);
             color: white;
             background: rgb(44, 39, 125);
@@ -57,7 +57,7 @@ class Subnav extends HTMLElement {
 
         if (location.pathname.endsWith('/'+pathname)) {
             content += `<li>${node.textContent}</li>`;
-        } else if (pathname === '.' && location.pathname.endsWith('/index.html')) {
+        } else if (pathname === '.' && (location.pathname.endsWith('/') || location.pathname.endsWith('/index.html'))) {
             content += `<li>${node.textContent}</li>`;
         } else {
             content += `<li><a href='${pathname}'>${node.textContent}</a></li>`;
