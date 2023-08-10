@@ -47,18 +47,19 @@
       flex-grow: 1;
    }
 
-   main {
+   main.testing {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 1rem;
-   }
+      gap: 0;
 
-   main>div {
-      margin: 0;
+      &>div {
+         margin: 0;
+      }
    }
 
    main>div.spacer {
       flex-grow: 1;
+      min-height: 1rem;
    }
 }

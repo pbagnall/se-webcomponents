@@ -19,7 +19,7 @@
         <li><a href='/selection/'>Selection</a></li>
     </ul>
 </nav>
-<main>
+<main class='testing'>
     <demo-subnav>
         <a href='.'>Demo</a>
         <a href='docs.html'>Documentation</a>
@@ -47,7 +47,9 @@
             <demo-directionmap id='mapNE' popup='mapPopup' directions='sw,ws,wm'></demo-directionmap>
         </section>
     </div>
+
     <div class='spacer'></div>
+
     <div class='bottom'>
         <section>
             <h2>Testing auto placement SW</h2>
@@ -58,7 +60,6 @@
             <demo-directionmap id='mapSW' popup='mapPopup' directions='nw,wn'></demo-directionmap>
         </section>
     </div>
-
 </main>
 <se-popup class='fixedSize' id='mapPopup' anchor='mapSE' anchor-direction='se,sm,es,em'>
     <h2 class='popup'>Popup content</h2>
