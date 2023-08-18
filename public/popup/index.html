@@ -7,11 +7,10 @@
    <link rel='stylesheet' href='/popup/demostyles.css' />
 
    <script type='text/javascript'>
-      const popupClosedHandler = () => popupClosed(trigger, popup);
-
       function toggle(event) {
          const trigger = event.target;
          const popup = document.getElementById("popup"+trigger.id.slice(7));
+         const popupClosedHandler = () => popupClosed(trigger, popup, popupClosedHandler);
 
          if (trigger.textContent === 'Open popup') {
             popup.open();
@@ -22,9 +21,9 @@
          }
       }
 
-      function popupClosed(trigger, popup) {
+      function popupClosed(trigger, popup, handler) {
          trigger.textContent = "Open popup";
-         popup.removeEventListener("close", popupClosedHandler);
+         popup.removeEventListener("close", handler);
       }
    </script>
 </head>
