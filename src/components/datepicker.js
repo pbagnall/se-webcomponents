@@ -22,7 +22,7 @@ const icons = makeSvgIcons({
 });
 
 const datePickerTemplate = document.createElement('template');
-datePickerTemplate.innerHTML = `
+datePickerTemplate.innerHTML = /* language=HTML */ `
     <style>
         div.datepicker {
             display: inline-flex;
@@ -74,13 +74,12 @@ datePickerTemplate.innerHTML = `
         div.datepicker       button.trigger:active { background-color: #aaaaaa; }
     </style>
     <div class='datepicker' id='date-picker'>
-    <input class='field' type='text' value='no selection' /><button tabindex='-1' class='trigger'></button>
+       <input class='field' type='text' value='no selection' /><button tabindex='-1' class='trigger'></button>
     </div>
 `;
 
 const dialogTemplate = document.createElement('template');
-// language = HTML
-dialogTemplate.innerHTML = `
+dialogTemplate.innerHTML = /* language=HTML */`
    <style id='popup'>
       se-popup#calendar {
          --padding: 0;
@@ -247,7 +246,7 @@ dialogTemplate.innerHTML = `
 `;
 
 const interpretationTemplate = document.createElement('template');
-interpretationTemplate.innerHTML = `
+interpretationTemplate.innerHTML = /* language=HTML */ `
    <style id='interpretStyle'>
       se-popup#interpret {
          font-size: 0.8em;
@@ -544,6 +543,7 @@ class DatePicker extends HTMLElement {
 
    highlightDate(tbody, date, show) {
       const weekElem = this.getSelectionWeek(tbody, date);
+      if (weekElem === null) return;
 
       // for dateValue monday = 1, sunday = 0
       // item is zero based, so monday needs to be 0, sunday = 6
@@ -741,6 +741,7 @@ class DatePicker extends HTMLElement {
 
    populateCalendar() {
       const tablebody = this.dialog.querySelector("tbody");
+      tablebody.replaceChildren();
       tablebody.addEventListener("click", (e) => this.clickDate(e));
       const startDate = this.dateValue.subtract(52, 'week').date(1);
       this.addWeeksAtEnd(104, startDate);
