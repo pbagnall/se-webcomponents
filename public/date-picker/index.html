@@ -2,29 +2,23 @@
 <html lang="en/GB">
 <head>
    <title>Date Picker demo</title>
-   <script src='/scripts/main.js'></script>
    <link rel='stylesheet' href='/styles/styles.css' />
-   <link rel='stylesheet' href='/datepicker/demostyles.css' />
-   <script type='text/javascript'>
+   <link rel='stylesheet' href='demostyles.css' />
+   <script type='module'>
+      import { dayjs } from '/scripts/main.js';
+
       function dateChanged(event) {
          const output = document.getElementById('output');
          const date = dayjs(event.value);
          output.replaceChildren(document.createTextNode(date.format("DD-MMM-YYYY")));
       }
+
+      document.getElementById('dp').addEventListener('change', dateChanged);
    </script>
 </head>
 <body>
-<header>
-   <h1>Web Components demonstration</h1>
-</header>
-<nav>
-   <ul>
-      <li><a href='/'>Overview</a></li>
-      <li class='selected'>Date Picker</li>
-      <li><a href='/popup/'>Popup</a></li>
-      <li><a href='/selection/'>Selection</a></li>
-   </ul>
-</nav>
+<header><h1>Web Components demonstration</h1></header>
+<nav></nav>
 <main>
    <demo-subnav>
       <a href='.'>Demo</a>
@@ -34,7 +28,7 @@
    <div>
       <section>
          <h2>With default styling</h2>
-         <se-datepicker date='today' onchange='dateChanged(event)'></se-datepicker>
+         <se-datepicker id='dp' date='today'></se-datepicker>
 
          <h2>Output</h2>
          <output id='output'></output>

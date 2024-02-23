@@ -35,7 +35,7 @@ popupTemplate.innerHTML = `
 
 let currentPopup = null;
 
-class PopUp extends HTMLElement {
+class Popup extends HTMLElement {
    constructor() {
       super();
       this.attachShadow({ mode: 'open' });
@@ -231,4 +231,4 @@ class PopUp extends HTMLElement {
       }
    }
 }
-window.customElements.define('se-popup', PopUp);
+window.customElements.define('se-popup', Popup);

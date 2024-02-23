@@ -2,9 +2,10 @@
 <html lang="en/GB">
 <head>
    <title>Popup demo</title>
-   <script src='/scripts/main.js'></script>
+   <script type='module' src='/scripts/template.js'></script>
+   <script type='module' src='/scripts/components.js'></script>
    <link rel='stylesheet' href='/styles/styles.css' />
-   <link rel='stylesheet' href='/popup/demostyles.css' />
+   <link rel='stylesheet' href='demostyles.css' />
 
    <script type='text/javascript'>
       function toggle(event) {
@@ -31,14 +32,7 @@
 <header>
    <h1>Web Components demonstration</h1>
 </header>
-<nav>
-   <ul>
-      <li><a href='/'>Overview</a></li>
-      <li><a href='/datepicker/'>Date Picker</a></li>
-      <li class='selected'>Popup</li>
-      <li><a href='/selection/'>Selection</a></li>
-   </ul>
-</nav>
+<nav></nav>
 <main>
    <demo-subnav>
       <a href='.'>Demo</a>

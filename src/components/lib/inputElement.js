@@ -8,6 +8,7 @@ export function setupInput() {
 }
 
 export function updateValue(value) {
+    console.log('update', value);
     if (this.mixin_inputElement) {
         this.mixin_inputElement.setAttribute('value', value);
     }

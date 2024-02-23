@@ -1,7 +1,7 @@
-import './popup.js';
-import './selection.js';
+import '../Popup/Popup.js';
+import '../Selection/Selection.js';
 import { getShortcut } from '../lib/keyboard.js';
-import { extractDate } from "../lib/dateRecogniser.js";
+import { extractDate } from "./dateRecogniser.js";
 import { setupInput as si, updateValue as uv } from '../lib/inputElement.js';
 import { makeSvgIcons } from "../lib/svg.js";
 import dayjs from "dayjs/esm/index";

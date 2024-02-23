@@ -2,9 +2,9 @@
 <html lang="en/GB">
 <head>
    <title>Selection demo</title>
-   <script src='/scripts/main.js'></script>
+   <script type='module' src='/scripts/main.js'></script>
    <link rel='stylesheet' href='/styles/styles.css' />
-   <link rel='stylesheet' href='/selection/demostyles.css' />
+   <link rel='stylesheet' href='demostyles.css' />
    <script type='text/javascript'>
       function selected(event) {
          const out = document.getElementById('output');
@@ -13,6 +13,9 @@
 
       document.addEventListener('DOMContentLoaded', () => {
          const selection = document.getElementById('selection');
+         const out = document.getElementById('output');
+         console.log('loaded');
+         out.innerHTML = `${selection.description} (${selection.value})`;
          selection.addEventListener("selected", (event) => { selected(event); } );
       });
    </script>
@@ -21,14 +24,7 @@
 <header>
    <h1>Web Components demonstration</h1>
 </header>
-<nav>
-   <ul>
-      <li><a href='/'>Overview</a></li>
-      <li><a href='/datepicker/'>Date Picker</a></li>
-      <li><a href='/popup/'>Popup</a></li>
-      <li class='selected'>Selection</li>
-   </ul>
-</nav>
+<nav></nav>
 
 <main>
    <ul class='subnav'>

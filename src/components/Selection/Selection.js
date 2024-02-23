@@ -52,6 +52,11 @@ class Selection extends HTMLElement {
     connectedCallback() {
         this.setupInput();
 
+        for (const child of this.children) {
+            this.addListItem(child);
+        }
+        this.ensureSelection();
+        
         const observer = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
                 for (const node of mutation.addedNodes) this.addListItem(node);
@@ -83,12 +88,12 @@ class Selection extends HTMLElement {
     addListItem(node) {
         if (node.nodeType !== Node.ELEMENT_NODE || node.tagName !== 'OPTION') return;
 
-        const value = node.attributes.getNamedItem('value');
+        const value = node.getAttribute('value');
         const description = node.textContent;
         const element = document.createElement("div");
         element.className = 'item';
         element.appendChild(document.createTextNode(description));
-        element.attributes['value'] = value;
+        element.setAttribute('value', value);
         element.addEventListener("click", (event) => { this.clickItem(event) });
         this.list.appendChild(element);
     }
@@ -103,9 +108,13 @@ class Selection extends HTMLElement {
         }
         if (nothingSelected) {
             const item = this.list.firstElementChild;
-            const value = item.getAttribute('value');
-            item.classList.add('selected');
-            this.updateValue(value);
+            if (item) {
+                const value = item.getAttribute('value');
+                item.classList.add('selected');
+                this.value = value;
+                this.description = item.textContent;
+                this.updateValue(value);
+            }
         }
     }
 
@@ -139,7 +148,7 @@ class Selection extends HTMLElement {
     removeListItem(node) {
         if (node.nodeType !== Node.ELEMENT_NODE || node.tagName !== 'OPTION') return;
 
-        const value = node.attributes.getNamedItem('value');
+        const value = node.getAttribute('value');
         const description = node.textContent;
 
         const element = this.findItem(value, description);
@@ -148,7 +157,8 @@ class Selection extends HTMLElement {
 
     findItem(value, description) {
         for (const div of this.list.children) {
-            if (div.attributes['value'] === value && div.textContent === description) return div;
+            console.log(div, div.getAttribute('value'), value, div.textContent, description);
+            if (div.getAttribute('value') === value && div.textContent === description) return div;
         }
         return null;
     }
