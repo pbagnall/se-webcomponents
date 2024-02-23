@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en/GB">
+<head>
+    <title>Choose panel demo</title>
+    <link rel='stylesheet' href='/styles/styles.css' />
+    <link rel='stylesheet' href='demostyles.css' />
+    <script type='module'>
+       import { createElement } from "../scripts/main.js";
+
+       function getRow(name, value) {
+          const tr = createElement('tr');
+          tr.appendChild(createElement('th', null, name));
+          tr.appendChild(createElement('td', null, value));
+          return tr;
+       }
+
+       function fileChosen(event) {
+          const fileDetails = document.getElementById('filedetails');
+          const details = createElement('table');
+          details.appendChild(getRow('Filename',event.file.name));
+          details.appendChild(getRow('Size',event.file.size));
+          details.appendChild(getRow('Type',event.file.type));
+          details.appendChild(getRow('Last modified',new Date(event.file.lastModified)));
+
+          fileDetails.replaceChildren(details);
+       }
+
+       addEventListener('load', () => {
+          document.getElementById('chooser').addEventListener('filechanged', fileChosen);
+          document.getElementById('choose-csv').addEventListener('filechanged', fileChosen);
+       });
+    </script>
+</head>
+<body>
+<header>
+    <h1>Web Components demonstration</h1>
+</header>
+<nav></nav>
+<main>
+    <demo-subnav>
+        <a href='.'>Demo</a>
+        <a href='docs.html'>Documentation</a>
+    </demo-subnav>
+
+    <div>
+        <section>
+            <h1>Choose a file</h1>
+            <ui-choosefile id='chooser'></ui-choosefile>
+        </section>
+
+        <section>
+            <h1>Choose an image file</h1>
+            <ui-choosefile id='choose-csv' accept='image/jpeg,image/png,image/gif'>Choose image file...</ui-choosefile>
+        </section>
+
+        <section>
+            <h1>File details</h1>
+            <div id='filedetails'>
+                <p>No file chosen</p>
+            </div>
+        </section>
+
+        <section>
+            <h1>File upload</h1>
+            <ui-choosefile id='chooser'></ui-choosefile>
+            <div id='filedetails'>
+                <p>No file chosen</p>
+            </div>
+        </section>
+    </div>
+
+    <section>
+        <details open>
+            <summary>Features</summary>
+            <ul>
+                <li>Allows selection of a file</li>
+                <li>Fires an event with the file details, and access to the content when the file is selected</li>
+                <li>TODO: Can be used in a form, and will upload the file just like an &lt;input type='file' ...&gt;</li>
+            </ul>
+        </details>
+    </section>
+</main>
+</body>
+</html>

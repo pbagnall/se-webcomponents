@@ -2,16 +2,16 @@ import { createElement } from "../lib/dom.js";
 
 const pages = [
    'Overview',
-   // 'Choose',
-   // 'Choose File',
+   'Choose',
+   'Choose File',
    'Date Picker',
-   // 'Drop Target',
-   // 'Drop Text',
+   'Drop Target',
+   'Drop Text',
    // 'Field',
    'Popup',
    'Selection',
    // 'Tab Group',
-   // 'Table',
+   'Table',
    // 'Text Area',
 ];
 

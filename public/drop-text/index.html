@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en/GB">
+<head>
+    <title>Choose panel demo</title>
+    <script type='module' src='/scripts/template.js'></script>
+    <script type='module' src='/scripts/components.js'></script>
+    <link rel='stylesheet' href='/styles/styles.css' />
+    <link rel='stylesheet' href='demostyles.css' />
+    <script type='module'>
+       function getRow(name, value) {
+          const tr = createElement('tr');
+          tr.appendChild(createElement('th', null, name));
+          tr.appendChild(createElement('td', null, value));
+          return tr;
+       }
+
+       function fileChosen(event) {
+          const fileDetails = document.getElementById('filedetails');
+          const details = createElement('table');
+          details.appendChild(getRow('Filename',event.file.name));
+          details.appendChild(getRow('Size',event.file.size));
+          details.appendChild(getRow('Type',event.file.type));
+          details.appendChild(getRow('Last modified',new Date(event.file.lastModified)));
+
+          fileDetails.replaceChildren(details);
+       }
+
+       addEventListener('load', () => {
+          document.getElementById('target').addEventListener('filechanged', fileChosen);
+          document.getElementById('csv-target').addEventListener('filechanged', fileChosen);
+       });
+    </script>
+</head>
+<body>
+<header>
+    <h1>Web Components demonstration</h1>
+</header>
+<nav></nav>
+<main>
+    <demo-subnav>
+        <a href='.'>Demo</a>
+        <a href='docs.html'>Documentation</a>
+    </demo-subnav>
+
+    <div>
+        <section>
+            <h1>Drop a file...</h1>
+            <ui-droptext id='target' permitted='text/csv'><p slot='message'>Drop a file...</p></ui-droptext>
+        </section>
+
+        <section>
+            <h1>Drop a CSV file</h1>
+            <ui-droptext id='csv-target' permitted='text/csv'><p slot='message'>Drop a CSV file...</p></ui-droptext>
+        </section>
+
+        <section>
+            <h1>File details</h1>
+            <div id='filedetails'>
+                <p>No file chosen</p>
+            </div>
+        </section>
+    </div>
+
+    <section>
+        <details open>
+            <summary>Features</summary>
+            <ul>
+                <li>Provides a simple way to display one of a group of content areas.</li>
+            </ul>
+        </details>
+    </section>
+</main>
+</body>
+</html>
