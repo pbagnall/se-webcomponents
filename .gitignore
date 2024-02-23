@@ -3,5 +3,4 @@
 # Useful .gitignore templates: https://github.com/github/gitignore
 node_modules
 dist
-/public/scripts/main.js
-/public/scripts/main.js.map
+/public/scripts/*
