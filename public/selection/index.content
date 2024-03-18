@@ -1,0 +1,82 @@
+///// header
+<script type='module' src='/scripts/main.js'></script>
+<link rel='stylesheet' href='/styles/styles.css' />
+<link rel='stylesheet' href='demostyles.css' />
+<script type='text/javascript'>
+   function selected(event) {
+      const out = document.getElementById('output');
+      out.innerHTML = `${event.description} (${event.value})`;
+   }
+
+   document.addEventListener('DOMContentLoaded', () => {
+      const selection = document.getElementById('selection');
+      const out = document.getElementById('output');
+      console.log('loaded');
+      out.innerHTML = `${selection.description} (${selection.value})`;
+      selection.addEventListener("selected", (event) => { selected(event); } );
+   });
+</script>
+
+
+///// content
+<div>
+    <section>
+        <h2>With default styling</h2>
+        <se-selection id='selection'>
+            <option value='1st'>The first option</option>
+            <option value='2nd'>The second option</option>
+            <option value='3rd'>The third option</option>
+            <option value='4th'>The fourth option</option>
+        </se-selection>
+
+        <h2>Output</h2>
+        <output id='output'>No selection</output>
+    </section>
+
+    <section>
+        <h2>With custom styling</h2>
+        <se-selection class='alternate'>
+            <option value='1st'>The first option</option>
+            <option value='2nd'>The second option</option>
+            <option value='3rd'>The third option</option>
+            <option value='4th'>The fourth option</option>
+        </se-selection>
+    </section>
+
+    <section id='formecho'>
+        <div>
+            <h2>In a form</h2>
+            <form action='/echo.html' target='frame' method='get'>
+                <se-selection name='selection'>
+                    <option value='1st'>The first option</option>
+                    <option value='2nd'>The second option</option>
+                    <option value='3rd'>The third option</option>
+                    <option value='4th'>The fourth option</option>
+                </se-selection>
+                <p>
+                    <input type='submit' value='Record choice' />
+                </p>
+            </form>
+        </div>
+        <div>
+            <h2>Form target</h2>
+            <iframe name='frame' src='/echo.html'></iframe>
+        </div>
+    </section>
+</div>
+
+<section>
+    <details open>
+        <summary>Features</summary>
+        <ul>
+            <li>Selection list stylable version of select element</li>
+            <li>Styleable using CSS custom variables</li>
+            <li>Can be used just like a select
+                <ul>
+                    <li>Can be used in forms, with a name attribute</li>
+                    <li>Fires change event when someone selects an item from the list</li>
+                </ul>
+            </li>
+        </ul>
+    </details>
+</section>

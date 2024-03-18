@@ -9,10 +9,6 @@ import './components/Table/Table.js';
 
 import { createElement } from './lib/dom.js';
 
-import "./template/directionmap.js";
-import "./template/subnav.js";
-import "./template/component_nav.js";
-
 import dayjs from "dayjs/esm/index";
 
 export { createElement, dayjs };

@@ -1,0 +1,74 @@
+///// header
+   <script type='module' src='/scripts/template.js'></script>
+   <script type='module' src='/scripts/components.js'></script>
+
+///// content
+   <section>
+      <p>
+         <se-datepicker date='2023-5-12'></se-datepicker>
+      </p>
+   </section>
+   <section>
+      <h2>Documentation</h2>
+      <h3>Using the date picker</h3>
+      <p>
+         You can make the component available simply by adding this script into your head element.
+      </p>
+      <blockquote><code>
+         &lt;script type='module' src='/components/datepicker.js'&gt;&lt;/script&gt;
+      </code></blockquote>
+      <p>
+         And then simply use by insert the se-datepicker tag into your HTML like this
+      </p>
+      <blockquote><code>
+         &lt;se-datepicker date='2023-5-12'&gt;&lt;/se-datepicker&gt;
+      </code></blockquote>
+      <p>
+         Of course, that's not very helpful, you need to be able to get the value from the
+         datepicker. You can do that exactly the same way you would with a native date picker.
+      </p>
+      <ul>
+         <li>
+            In a form, set the <code>name</code> and the <code>value</code> will be passed with
+            the form data.
+         </li>
+         <li>Read the element's value property</li>
+         <li>Listen to the onchange events</li>
+      </ul>
+
+      <blockquote><code>
+         &lt;se-datepicker date='2023-5-12' name='appointment'&gt;&lt;/se-datepicker&gt;
+      </code></blockquote>
+
+      <h3>Styling the date picker</h3>
+      <dl>
+         <dt><code>--oddPeriodBackground</code></dt>
+         <dd>background colour for odd months and years</dd>
+
+         <dt><code>--evenPeriodBackground</code></dt>
+         <dd>background colour for even months and years</dd>
+
+         <dt><code>--toolbarBackground</code></dt>
+         <dd>
+            background for the toolbar with the days of the week and up/down month/year buttons
+         </dd>
+
+         <dt><code>--foreground</code></dt>
+         <dd>Colour of dates, days of week, and all other text</dd>
+
+         <dt><code>--hoverColor</code></dt>
+         <dd>Text colour of dates when being hovered over</dd>
+
+         <dt><code>--hoverBackgroundColor</code></dt>
+         <dd>Background colour of dates when being hovered over</dd>
+
+         <dt><code>--selectedColor</code></dt>
+         <dd>Text colour of selected date</dd>
+
+         <dt><code>--selectedBackgroundColor</code></dt>
+         <dd>Background colour of selected date</dd>
+
+         <dt><code>--todayBorderColor</code></dt>
+         <dd>Colour of border around today's date</dd>
+      </dl>
+   </section>

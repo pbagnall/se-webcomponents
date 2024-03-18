@@ -1,0 +1,56 @@
+///// header
+    <title>Choose panel demo</title>
+    <link rel='stylesheet' href='demostyles.css' />
+    <script type='module' src='/scripts/main.js'></script>
+    <script type='text/javascript'>
+       function updateChooser(event) {
+          if (event.target.checked) {
+             document.querySelector('ui-choose').setSlot(event.target.value);
+          }
+       }
+
+       function setup() {
+          let paras = document.querySelectorAll("input[name='chooser']");
+          for (const para of paras) {
+             para.addEventListener('change', updateChooser);
+          }
+       }
+
+       addEventListener('load', setup);
+    </script>
+
+///// content
+    <div>
+        <section>
+            <h1>Choose which content to display</h1>
+            <label><input type='radio' name='chooser' value='sec1' checked>Section 1</label><br>
+            <label><input type='radio' name='chooser' value='sec2' >Section 2</label><br>
+            <label><input type='radio' name='chooser' value='sec3' >Section 3</label><br>
+            <label><input type='radio' name='chooser' value='sec4' >Section 4</label>
+        </section>
+
+        <section>
+            <ui-choose showslot='sec1'>
+                <p slot='sec1'>This is section 1</p>
+                <p slot='sec2'>This is section 2</p>
+                <p slot='sec3'>This is section 3</p>
+                <p slot='sec4'>This is section 4</p>
+            </ui-choose>
+        </section>
+    </div>
+
+    <section>
+        <details open>
+            <summary>Features</summary>
+            <ul>
+                <li>Provides a simple way to display one of a group of content areas.</li>
+                <li>Intented to be used to implement tabs, workflow controls, other prerendered UIs</li>
+                <li>Content is switched by changing the 'showslot' attribute on the ui-choose element</li>
+            </ul>
+            <h3>Does not</h3>
+            <ul>
+                <li>provide a UI for switching which content is currently visible</li>
+                <li>update any content in the chosen panel</li>
+            </ul>
+        </details>
+    </section>

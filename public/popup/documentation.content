@@ -1,0 +1,8 @@
+///// content
+<section>
+    <h2>Popup documentation</h2>
+    <p>
+        The popup can be used as a container for any UI element which needs to appear next to another element in the
+        UI. For example, a popup menu, dropdown, or a complex input field such as a datepicker.
+    </p>
+</section>

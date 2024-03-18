@@ -1,0 +1,60 @@
+///// header
+   <link rel='stylesheet' href='demostyles.css' />
+   <script type='module' src='/scripts/main.js'></script>
+   <script type='module'>
+      function dateChanged(event) {
+         document.getElementById('output').replaceChildren(document.createTextNode(event.value));
+      }
+
+      document.getElementById('dp').addEventListener('change', dateChanged);
+   </script>
+
+
+///// content
+   <div>
+      <section>
+         <h2>With default styling</h2>
+         <se-datepicker id='dp' date='today'></se-datepicker>
+
+         <h2>Output</h2>
+         <output id='output'></output>
+      </section>
+
+      <section>
+         <h2>With custom styling</h2>
+         <se-datepicker date='2024-05-21' class='alternate'></se-datepicker>
+      </section>
+
+      <section id='formecho'>
+         <div>
+            <h2>In a form</h2>
+            <form action='/echo.html' target='frame' method='get'>
+               <se-datepicker name='date' date='2023-1-12'></se-datepicker>
+               <p>
+                  <input type='submit' value='Save date' />
+               </p>
+            </form>
+         </div>
+         <div>
+            <h2>Form target</h2>
+            <iframe name='frame' src='/echo.html'></iframe>
+         </div>
+      </section>
+   </div>
+
+   <section>
+      <details open>
+         <summary>Features</summary>
+         <ul>
+            <li>Multiple month display - time is a continuum!</li>
+            <li>Infinitely Scrollable calendar</li>
+            <li>Styleable using CSS custom properties</li>
+            <li>Can be fully controlled by keyboard</li>
+            <li>
+               Can be used as a form field, so can be used as a drop-in replacement for an &lt;input type='date'&gt;
+               field
+            </li>
+            <li>Fires change event when a date is selected</li>
+         </ul>
+      </details>
+   </section>

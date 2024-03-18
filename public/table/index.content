@@ -1,0 +1,29 @@
+///// header
+<script type='module' src='/scripts/template.js'></script>
+<script type='module' src='/scripts/components.js'></script>
+<link rel='stylesheet' href='/styles/styles.css' />
+<link rel='stylesheet' href='demostyles.css' />
+<script type='module'>
+</script>
+
+///// content
+<div>
+    <section>
+        <h1>Table</h1>
+        <ui-table></ui-table>
+    </section>
+</div>
+
+<section>
+    <details open>
+        <summary>Features</summary>
+        <ul>
+            <li>TO DO: Pinned columns</li>
+            <li>TO DO: Adjustable width columns</li>
+            <li>TO DO: Sorting</li>
+            <li>TO DO: Re-order columns</li>
+            <li>TO DO: Use simple tr, th/td markup within the table</li>
+            <li>TO DO: Drop in replacement for &lt;table&gt;</li>
+        </ul>
+    </details>
+</section>

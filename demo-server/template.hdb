@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en/GB">
+<head>
+   <title>Web components demo</title>
+   <link rel='stylesheet' href='/styles/styles.css' />
+   <script type='module' src='/scripts/template.js'></script>
+   {{{header}}}
+</head>
+<body>
+<header>
+   <h1>Web Components demonstration</h1>
+</header>
+<nav>
+    <ul>
+        {{#each links}}
+            {{#if (inDirectory this.pathname ../pathname)}}
+                <li class='selected'>{{this.name}}</li>
+            {{else}}
+                <li><a href="{{this.pathname}}">{{this.name}}</a></li>
+            {{/if}}
+        {{/each}}
+    </ul>
+</nav>
+<main>
+    <demo-subnav>
+        {{{subnav}}}
+    </demo-subnav>
+    {{{content}}}
+</main>
+</body>
+</html>

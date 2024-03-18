@@ -1,0 +1,20 @@
+///// header
+<script type='module' src='/scripts/main.js'></script>
+
+///// content
+<p>
+    These web components have been written on various projects, so I'm now starting to bring them together into a
+    library.
+</p>
+<p>
+    These are mostly proof of concepts, or incomplete components, they are not yet production-ready, although
+    I am aiming to get them production ready.
+</p>
+<p>
+    They will all have some common capabilities such as
+</p>
+<ul>
+    <li>Styling through CSS custom properties</li>
+    <li>Form elements will all work as drop in replacements (or refinements) of common HTML form elements</li>
+    <li>Layout components will internalise layout rules, such as spacing and alignment automatically for child components</li>
+</ul>

@@ -1,0 +1,19 @@
+{
+  "port": 8080,
+
+  "directoryIndex": ["index.content", "index.html"],
+
+  "fileTypes": {
+    "css":     { "handler": "serveFile", "mimeType": "text/css" },
+    "html":    { "handler": "serveFile", "mimeType": "text/html" },
+    "js":      { "handler": "serveFile", "mimeType": "application/javascript" },
+    "map":     { "handler": "serveFile", "mimeType": "application/json" },
+    "jpg":     { "handler": "serveFile", "mimeType": "image/jpeg" },
+    "png":     { "handler": "serveFile", "mimeType": "image/png" },
+    "content": { "handler": "serveTemplatedFile", "mimeType": "text/html" }
+  },
+
+  "template": "template.hdb",
+
+  "publicRoot": "../public"
+}

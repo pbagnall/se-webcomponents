@@ -1,0 +1,115 @@
+///// header
+<script type='module' src='/scripts/components.js'></script>
+<link rel='stylesheet' href='demostyles.css' />
+
+<script type='text/javascript'>
+   function toggle(event) {
+      const trigger = event.target;
+      const popup = document.getElementById("popup"+trigger.id.slice(7));
+      const popupClosedHandler = () => popupClosed(trigger, popup, popupClosedHandler);
+
+      if (trigger.textContent === 'Open popup') {
+         popup.open();
+         popup.addEventListener("close", popupClosedHandler);
+         trigger.textContent = 'Close popup'
+      } else {
+         popup.close();
+      }
+   }
+
+   function popupClosed(trigger, popup, handler) {
+      trigger.textContent = "Open popup";
+      popup.removeEventListener("close", handler);
+   }
+</script>
+
+
+///// content
+<div>
+    <section class='rhs'>
+        <h2>Configurable, popup at end of DOM</h2>
+        <demo-directionmap id='map1' popup='mapPopup' directions='ne,nm,nw,se,sm,sw,en,em,es,wn,wm,ws'></demo-directionmap>
+    </section>
+    <section>
+        <h2>Popup settings</h2>
+        <p><label>Width: <input name='width' type='number'></label></p>
+        <p><label>Min Width: <input name='minwidth' type='number'></label></p>
+        <p><label>Max Width: <input name='maxwidth' type='number'></label></p>
+    </section>
+    <section>
+        <h2>Configurable, popup sibling of trigger</h2>
+        <demo-directionmap id='map2' popup='mapPopup2' directions='ne,nm,nw,se,sm,sw,en,em,es,wn,wm,ws'></demo-directionmap>
+        <se-popup class='' id='mapPopup2' anchor='mapSE2' anchor-direction='se,sm,es,em'>
+            <h2 class='popup'>Popup content</h2>
+            <p>
+                The popup will automatically size itself to fit the content, unless the content is styled with fixed
+                size. This means the size of the popup depends on the position it finally gets. So the position needs
+                to be attempted for each possible position.
+            </p>
+        </se-popup>
+    </section>
+</div>
+
+<section>
+    <details open>
+        <summary>Features</summary>
+        <ul>
+            <li>Automatically positions itself relative to an "anchor" element</li>
+            <li>
+                Options for where it appears relative to anchor can be set in order of preference, and dependent on
+                there being enough space in that direction. The first direction it fits in will be used. If none fit
+                it will use the first.
+            </li>
+            <li>Styleable using CSS custom properties</li>
+            <li>Only one popup can be open at a time</li>
+            <li>Clicking outside a popup closes the popup</li>
+            <li>Fires events when the popup is opened or closed</li>
+        </ul>
+    </details>
+</section>
+
+<p style='height: 100px; display: flex; align-items: center;'>
+    Scroll down for more popups, for testing positioning when scrolled.
+</p>
+
+<div>
+    <section>
+        <h2>With default styling</h2>
+        <button id="trigger1" onclick="toggle(event)">Open popup</button>
+    </section>
+
+    <section>
+        <h2>Used by datepicker</h2>
+        <se-datepicker date='today'></se-datepicker>
+    </section>
+
+    <div></div>
+
+    <section>
+        <h2>With custom styling</h2>
+        <button id='trigger101' class='alternate' onclick='toggle(event)'>Open popup</button>
+    </section>
+    <se-popup id='popup101' anchor='trigger101' anchor-direction='nw' class='alternate'>
+        <h2 class='popup'>Popup content</h2>
+        <p>
+            The popup will automatically size itself to fit the content, unless the content is styled with fixed size
+        </p>
+    </se-popup>
+</div>
+</main>
+<se-popup id="popup1" anchor="trigger1" anchor-direction="se,ne">
+    <h2 class="popup">Popup content</h2>
+    <p>
+        The popup will automatically size itself to fit the content, unless the content is styled with fixed
+        size. This means the size of the popup depends on the position it finally gets. So the position needs
+        to be attempted for each possible position.
+    </p>
+</se-popup>
+<se-popup class='' id='mapPopup' anchor='mapSE' anchor-direction='se,sm,es,em'>
+    <h2 class='popup'>Popup content</h2>
+    <p>
+        The popup will automatically size itself to fit the content, unless the content is styled with fixed
+        size. This means the size of the popup depends on the position it finally gets. So the position needs
+        to be attempted for each possible position.
+    </p>
+</se-popup>
