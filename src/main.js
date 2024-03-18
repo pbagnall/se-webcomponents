@@ -7,6 +7,9 @@ import './components/Popup/Popup.js';
 import './components/Selection/Selection.js';
 import './components/Table/Table.js';
 
+import './template/directionmap.js';
+import './template/subnav.js';
+
 import { createElement } from './lib/dom.js';
 
 import dayjs from "dayjs/esm/index";
